@@ -4,10 +4,10 @@ const morgan = require('morgan');
 const connectDB = require('./config/db');
 const errorMiddleware = require('./middleware/error');
 
-// const userRoutes = require('./routes/userRoutes');
-// const hotelRoutes = require('./routes/hotelRoutes');
-// const roomRoutes = require('./routes/roomRoutes');
-// const bookingRoutes = require('./routes/bookingRoutes');
+const userRoutes = require('./routes/userRoutes');
+const hotelRoutes = require('./routes/hotelRoutes');
+const roomRoutes = require('./routes/roomRoutes');
+const bookingRoutes = require('./routes/bookingRoutes');
 
 const app = express();
 
@@ -20,10 +20,10 @@ app.use(cors());
 app.use(morgan('dev'));
 
 // Routes
-// app.use('/api/users', userRoutes);
-// app.use('/api/hotels', hotelRoutes);
-// app.use('/api/rooms', roomRoutes);
-// app.use('/api/bookings', bookingRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/hotels', hotelRoutes);
+app.use('/api/rooms', roomRoutes);
+app.use('/api/bookings', bookingRoutes);
 
 // Basic test route
 app.get('/', (req, res) => {

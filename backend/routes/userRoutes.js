@@ -4,12 +4,18 @@ const {
   registerUser,
   loginUser,
   getUserProfile,
-} = require('../controllers/userController');
+  forgotPassword,
+  resetPassword,
+  verifyEmail,
+} = require('../controllers/userController.js');
 
 const { protectUser } = require('../middleware/auth');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
 router.get('/profile', protectUser, getUserProfile);
+router.post('/forgot-password', forgotPassword);
+router.post('/reset-password/:token', resetPassword);
+router.get('/verify-email/:token', verifyEmail);
 
 module.exports = router;
