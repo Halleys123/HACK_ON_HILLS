@@ -5,6 +5,7 @@ const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsync = require('../utils/catchAsync');
 
 const verifyToken = (token) => {
+  // eslint-disable-next-line no-undef
   return jwt.verify(token, process.env.JWT_SECRET);
 };
 
