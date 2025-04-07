@@ -4,6 +4,7 @@ const sendResponse = require('../../utils/sendResponse');
 
 const getRooms = catchAsync(async (req, res, next) => {
   let {
+    hotelId,
     roomNumber,
     type,
     minPrice,
@@ -15,12 +16,15 @@ const getRooms = catchAsync(async (req, res, next) => {
     limit = 10,
   } = req.query;
 
+  hotelId = hotelId ? hotelId.split(',') : hotelId;
   roomNumber = roomNumber ? roomNumber.split(',') : roomNumber;
   type = type ? type.split(',') : type;
 
   const query = {};
 
   // Apply filters only if query parameters are provided
+  if (hotelId)
+    query.hotelId = { $in: Array.isArray(hotelId) ? hotelId : [hotelId] };
   if (roomNumber)
     query.roomNumber = {
       $in: Array.isArray(roomNumber) ? roomNumber : [roomNumber],
@@ -40,6 +44,8 @@ const getRooms = catchAsync(async (req, res, next) => {
 
   // Pagination
   const skip = (page - 1) * limit;
+  const totalRooms = await RoomSchema.countDocuments(query);
+  const totalPages = Math.ceil(totalRooms / limit);
 
   // Fetch rooms based on query
   const rooms = await RoomSchema.find(query).skip(skip).limit(Number(limit));
@@ -51,8 +57,10 @@ const getRooms = catchAsync(async (req, res, next) => {
     true,
     'List of all rooms with required query options',
     {
-      query,
+      page: page,
+      totalPages,
       rooms,
+      query,
     }
   );
 });
