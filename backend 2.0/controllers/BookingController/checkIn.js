@@ -49,17 +49,20 @@ const checkIn = catchAsync(async (req, res, next) => {
   }
 
   // Check if the booking is already checked in
+  if (booking.actualCheckIn !== null && booking.actualCheckOut !== null) {
+    return sendResponse(res, 400, false, 'Guest is already checked out', {});
+  }
   if (booking.actualCheckIn !== null) {
     return sendResponse(res, 400, false, 'Guest is already checked in', {});
   }
 
   // Update the booking status to checkedIn
-  booking.acutalCheckIn = new Date(); // Set the actual check-in date to now
-  await booking.save();
+  await BookingSchema.findByIdAndUpdate(bookingId, {
+    actualCheckIn: new Date(),
+  });
 
   sendResponse(res, 200, true, 'Guest checked in successfully', {
     booking,
-    room,
   });
 });
 

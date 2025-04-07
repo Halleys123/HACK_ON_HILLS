@@ -54,10 +54,12 @@ const checkOut = catchAsync(async (req, res, next) => {
   }
 
   // Update the booking status to checkedOut
-  booking.actualCheckOut = new Date(); // Set the actual check-out date to now
-  booking.status = 'completed'; // Mark the booking as completed
-  await booking.save();
-
+  await BookingSchema.findByIdAndUpdate(bookingId, {
+    actualCheckOut: new Date(),
+  });
+  await RoomSchema.findByIdAndUpdate(booking.roomId, {
+    isAvailable: true,
+  });
   sendResponse(res, 200, true, 'Guest checked out successfully', {
     booking,
     hotel,

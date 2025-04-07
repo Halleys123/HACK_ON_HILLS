@@ -5,6 +5,7 @@ const {
   createBooking,
 } = require('../controllers/BookingController/createBooking');
 const { checkIn } = require('../controllers/BookingController/checkIn');
+const { checkOut } = require('../controllers/BookingController/checkOut');
 const router = express.Router();
 
 router.post(
@@ -13,16 +14,17 @@ router.post(
   authorize(['owner', 'customer']),
   createBooking
 );
-router.put(
+router.patch(
   '/check-in/:bookingId',
   authenticate,
   authorize(['owner', 'customer']),
   checkIn
 );
-router.put(
+router.patch(
   '/check-out/:bookingId',
   authenticate,
-  authorize(['owner', 'customer'])
+  authorize(['owner', 'customer']),
+  checkOut
 );
 
 module.exports = router;
