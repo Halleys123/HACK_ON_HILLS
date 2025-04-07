@@ -17,10 +17,11 @@ const BookingSchema = mongoose.Schema(
       ref: 'Room',
       required: true,
     },
-    checkIn: Date,
-    checkOut: Date,
-    actualCheckIn: Date,
-    actualCheckOut: Date,
+    checkIn: { type: Date, required: true },
+    checkOut: { type: Date, required: true },
+
+    actualCheckIn: { type: Date, default: null }, // when the user actually checked in
+    actualCheckOut: { type: Date, default: null }, // when the user actually checked out
     totalPrice: Number,
     status: {
       type: String,

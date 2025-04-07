@@ -1,0 +1,68 @@
+const BookingSchema = require('../../schemas/BookingSchema');
+const HotelSchema = require('../../schemas/HotelSchema');
+const RoomSchema = require('../../schemas/RoomSchema');
+
+const catchAsync = require('../../utils/catchAsync');
+const sendResponse = require('../../utils/sendResponse');
+
+const checkIn = catchAsync(async (req, res, next) => {
+  const { id: userId } = req.user;
+  const { bookingId } = req.params; // Extract the booking ID from the request parameters
+
+  // Check if the user is an admin or a hotel owner
+  const hotel = await HotelSchema.findOne({ ownerId: userId });
+  if (!hotel) {
+    return sendResponse(
+      res,
+      403,
+      false,
+      'You are not authorized to check in guests',
+      {}
+    );
+  }
+
+  // Find the booking by ID
+  const booking = await BookingSchema.findById(bookingId);
+  if (!booking) {
+    return sendResponse(res, 404, false, 'Booking not found', {});
+  }
+
+  if (booking.status == 'completed') {
+    return sendResponse(
+      res,
+      400,
+      false,
+      'This booking session has already been used by the User',
+      {
+        description: 'This booking session has already been used by the User',
+        booking,
+        hotel,
+      }
+    );
+  }
+  if (booking.status == 'cancelled') {
+    return sendResponse(res, 400, false, 'Booking already cancelled', {
+      description: 'Booking already cancelled',
+      booking,
+      hotel,
+    });
+  }
+
+  // Check if the booking is already checked in
+  if (booking.actualCheckIn !== null) {
+    return sendResponse(res, 400, false, 'Guest is already checked in', {});
+  }
+
+  // Update the booking status to checkedIn
+  booking.acutalCheckIn = new Date(); // Set the actual check-in date to now
+  await booking.save();
+
+  sendResponse(res, 200, true, 'Guest checked in successfully', {
+    booking,
+    room,
+  });
+});
+
+module.exports = {
+  checkIn,
+};

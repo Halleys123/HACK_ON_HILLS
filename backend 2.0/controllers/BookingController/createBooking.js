@@ -5,7 +5,7 @@ const catchAsync = require('../../utils/catchAsync');
 const sendResponse = require('../../utils/sendResponse');
 
 const startBookingExpirationTimer = (bookingId, roomId) => {
-  const FIFTEEN_MINUTES = 1 * 60 * 1000;
+  const FIFTEEN_MINUTES = 15 * 60 * 1000;
   setTimeout(async () => {
     try {
       const booking = await BookingSchema.findById(bookingId);
