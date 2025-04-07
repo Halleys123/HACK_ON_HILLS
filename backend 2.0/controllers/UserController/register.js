@@ -1,6 +1,8 @@
 const UserSchema = require('../../schemas/UserSchema');
 const catchAsync = require('../../utils/catchAsync');
-const sendresponse = require('../../utils/sendResponse');
+const sendResponse = require('../../utils/sendResponse');
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 
 const registerUser = catchAsync(async (req, res) => {
   const { name, email, password, role } = req.body;
@@ -12,11 +14,15 @@ const registerUser = catchAsync(async (req, res) => {
     role,
   });
   const user = await newUser.save();
+
   if (!user) {
-    return sendresponse(res, 400, false, 'User not created', {
+    return sendResponse(res, 400, false, 'User not created', {
       user: null,
     });
   }
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES_IN || '1h',
+  });
 
   sendResponse(res, 201, true, 'User created successfully', {
     user: {
@@ -25,6 +31,7 @@ const registerUser = catchAsync(async (req, res) => {
       email: user.email,
       role: user.role,
     },
+    token,
   });
 });
 
