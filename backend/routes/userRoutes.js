@@ -9,7 +9,7 @@ const {
   verifyEmail,
 } = require('../controller/userController.js');
 
-const { protectUser } = require('../middleware/auth');
+const { protectUser } = require('../middleware/authMiddleware');
 
 router.post('/register', registerUser);
 router.post('/login', loginUser);
