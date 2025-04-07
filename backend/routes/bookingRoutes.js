@@ -7,7 +7,7 @@ const {
   checkOutBooking,
 } = require('../controller/bookingController');
 
-const { protectUser, protectHotel } = require('../middlewares/authMiddleware');
+const { protectUser, protectHotel } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 

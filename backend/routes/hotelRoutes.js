@@ -4,7 +4,7 @@ const {
   loginHotel,
   getHotelProfile,
 } = require('../controller/hotelController');
-const { protectHotel } = require('../middlewares/authMiddleware');
+const { protectHotel } = require('../middleware/authMiddleware');
 
 const router = express.Router();
 

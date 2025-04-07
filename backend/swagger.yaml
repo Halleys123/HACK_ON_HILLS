@@ -1,0 +1,335 @@
+openapi: 3.0.0
+info:
+  title: Hotel Management API
+  description: API documentation for the Hotel Management System.
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000/api
+    description: Local server
+
+paths:
+  /users/register:
+    post:
+      summary: Register a new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - name
+                - email
+                - password
+      responses:
+        201:
+          description: User registered successfully
+        400:
+          description: Bad request
+
+  /users/login:
+    post:
+      summary: Login a user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        200:
+          description: User logged in successfully
+        401:
+          description: Invalid credentials
+
+  /users/profile:
+    get:
+      summary: Get user profile
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User profile retrieved successfully
+        401:
+          description: User not authenticated
+
+  /hotels/register:
+    post:
+      summary: Register a new hotel
+      tags:
+        - Hotels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - name
+                - email
+                - password
+      responses:
+        201:
+          description: Hotel registered successfully
+        400:
+          description: Hotel already exists
+
+  /hotels/login:
+    post:
+      summary: Login a hotel
+      tags:
+        - Hotels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
+      responses:
+        200:
+          description: Hotel logged in successfully
+        401:
+          description: Invalid credentials
+
+  /hotels/profile:
+    get:
+      summary: Get hotel profile
+      tags:
+        - Hotels
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Hotel profile retrieved successfully
+        404:
+          description: Hotel not found
+
+  /rooms:
+    post:
+      summary: Create a room
+      tags:
+        - Rooms
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roomNumber:
+                  type: string
+                type:
+                  type: string
+                price:
+                  type: number
+              required:
+                - roomNumber
+                - type
+                - price
+      responses:
+        201:
+          description: Room created successfully
+        400:
+          description: Bad request
+
+    get:
+      summary: Get all rooms of the current hotel
+      tags:
+        - Rooms
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Rooms fetched successfully
+
+  /rooms/{id}:
+    get:
+      summary: Get a single room by ID
+      tags:
+        - Rooms
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Room fetched successfully
+        404:
+          description: Room not found
+
+    put:
+      summary: Update a room
+      tags:
+        - Rooms
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roomNumber:
+                  type: string
+                type:
+                  type: string
+                price:
+                  type: number
+      responses:
+        200:
+          description: Room updated successfully
+        404:
+          description: Room not found
+
+    delete:
+      summary: Delete a room
+      tags:
+        - Rooms
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Room deleted successfully
+        404:
+          description: Room not found
+
+  /bookings/{roomId}:
+    post:
+      summary: Create a booking
+      tags:
+        - Bookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        201:
+          description: Booking created successfully
+        404:
+          description: Room not found
+
+  /bookings/my:
+    get:
+      summary: Get user bookings
+      tags:
+        - Bookings
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: User bookings retrieved successfully
+
+  /bookings/hotel:
+    get:
+      summary: Get hotel bookings
+      tags:
+        - Bookings
+      security:
+        - bearerAuth: []
+      responses:
+        200:
+          description: Hotel bookings retrieved successfully
+
+  /bookings/{id}/checkin:
+    post:
+      summary: Check-in a guest
+      tags:
+        - Bookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Guest checked-in successfully
+        404:
+          description: Booking not found
+
+  /bookings/{id}/checkout:
+    post:
+      summary: Check-out a guest
+      tags:
+        - Bookings
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Guest checked-out successfully
+        404:
+          description: Booking not found
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
