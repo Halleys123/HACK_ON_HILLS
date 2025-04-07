@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
 
 const UserSchema = mongoose.Schema(
   {
@@ -14,7 +15,7 @@ const UserSchema = mongoose.Schema(
     },
     role: {
       type: String,
-      enum: ['user', 'owner'], // Restrict role to specific values
+      enum: ['customer', 'owner'],
       required: true,
     },
     phone: {
@@ -28,8 +29,15 @@ const UserSchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically manage createdAt and updatedAt
+    timestamps: true,
   }
 );
+
+UserSchema.pre('save', function (next) {
+  if (this.isModified('password')) {
+    this.password = bcrypt.hashSync(this.password, 10);
+  }
+  next();
+});
 
 module.exports = mongoose.model('User', UserSchema);
