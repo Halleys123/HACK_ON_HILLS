@@ -3,7 +3,7 @@ const {
   createHotel,
   loginHotel,
   getHotelProfile,
-} = require('../controllers/hotelController');
+} = require('../controller/hotelController');
 const { protectHotel } = require('../middlewares/authMiddleware');
 
 const router = express.Router();

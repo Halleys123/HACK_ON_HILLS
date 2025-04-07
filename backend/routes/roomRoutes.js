@@ -5,7 +5,7 @@ const {
   getRoom,
   updateRoom,
   deleteRoom,
-} = require('../controllers/roomController');
+} = require('../controller/roomController');
 const { protectHotel } = require('../middlewares/authMiddleware');
 
 const router = express.Router();

@@ -5,7 +5,7 @@ const {
   getHotelBookings,
   checkInBooking,
   checkOutBooking,
-} = require('../controllers/bookingController');
+} = require('../controller/bookingController');
 
 const { protectUser, protectHotel } = require('../middlewares/authMiddleware');
 
