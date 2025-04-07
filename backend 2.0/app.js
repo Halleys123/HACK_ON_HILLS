@@ -8,6 +8,7 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 
 const userRoutes = require('./routes/userRoutes');
+const hotelRoutes = require('./routes/hotelRoutes');
 
 const cors = require('cors');
 const helmet = require('helmet');
@@ -25,6 +26,7 @@ app.use(helmet());
 app.use(morgan('dev'));
 
 app.use('/api/v1/user', userRoutes);
+app.use('/api/v1/hotel', hotelRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

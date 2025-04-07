@@ -7,10 +7,9 @@ const HotelSchema = mongoose.Schema(
       ref: 'User',
       required: true,
     }, // reference to User
-    name: {
+    hotelName: {
       type: String,
       required: true,
-      default: 'NoName',
     },
     description: {
       type: String,

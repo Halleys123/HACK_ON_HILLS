@@ -22,14 +22,18 @@ const authorize = (acceptedRoles) => async (req, res, next) => {
 
     // Check if the user's role is in the acceptedRoles array
     if (acceptedRoles && !acceptedRoles.includes(user.role)) {
-      return res
-        .status(403)
-        .json({ message: 'Access Denied. Insufficient permissions.' });
+      return res.status(403).json({
+        success: false,
+        message: 'Access Denied. Insufficient permissions.',
+      });
     }
 
     next(); // Proceed to the next middleware or route handler
   } catch (err) {
-    res.status(403).json({ message: 'Invalid token.' });
+    return res.status(403).json({
+      success: false,
+      message: 'Invalid token.',
+    });
   }
 };
 
