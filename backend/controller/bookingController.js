@@ -1,5 +1,5 @@
-const Booking = require('../models/Booking');
-const Room = require('../models/Room');
+const Booking = require('../schema/bookingSchema');
+const Room = require('../schema/Room');
 const catchAsync = require('../utils/catchAsync');
 const ErrorHandler = require('../utils/ErrorHandler');
 const sendResponse = require('../utils/sendResponse');

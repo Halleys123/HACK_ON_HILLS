@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Hotel = require('../models/Hotel');
+const User = require('../schema/User');
+const Hotel = require('../schema/Hotel');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsync = require('../utils/catchAsync');
 

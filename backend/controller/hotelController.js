@@ -1,4 +1,4 @@
-const Hotel = require('../models/Hotel');
+const Hotel = require('../schema/hotelSchema');
 const catchAsync = require('../utils/catchAsync');
 const ErrorHandler = require('../utils/ErrorHandler');
 const sendResponse = require('../utils/sendResponse');
