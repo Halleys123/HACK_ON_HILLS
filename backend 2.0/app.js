@@ -9,6 +9,7 @@ const morgan = require('morgan');
 
 const userRoutes = require('./routes/userRoutes');
 const hotelRoutes = require('./routes/hotelRoutes');
+const roomRoutes = require('./routes/roomRoutes');
 
 const cors = require('cors');
 const helmet = require('helmet');
@@ -27,6 +28,7 @@ app.use(morgan('dev'));
 
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/hotel', hotelRoutes);
+app.use('/api/v1/room', roomRoutes);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
@@ -35,7 +37,7 @@ app.get('/api/v1', (req, res) => {
 });
 
 app.use((req, res, next) => {
-  const error = new Error('Not Found');
+  const error = new Error('Route not found, Please check for typos...');
   error.status = 404;
   next(error);
 });

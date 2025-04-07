@@ -9,7 +9,9 @@ const {
 
 const authorize = require('../middlewares/authorize');
 const authenticate = require('../middlewares/authenticate');
+const { getAllHotels } = require('../controllers/HotelController/getHotels');
 
+router.get('/', getAllHotels);
 router.post('/create-hotel', authenticate, authorize(['owner']), createHotel);
 router.delete('/:id', authenticate, authorize(['owner']), deleteAllHotel);
 router.delete('/', authenticate, authorize(['owner']), deleteHotel);

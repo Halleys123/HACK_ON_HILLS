@@ -37,7 +37,7 @@ const HotelSchema = mongoose.Schema(
       required: true,
     },
     images: [String], // image URLs
-    rating: { type: Number, max: 5, min: 1 }, // avg rating
+    rating: { type: Number, max: 5, min: 1, default: 5 }, // avg rating
     createdAt: Date,
     updatedAt: Date,
   },
