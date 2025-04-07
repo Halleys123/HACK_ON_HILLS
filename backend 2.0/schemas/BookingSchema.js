@@ -19,12 +19,18 @@ const BookingSchema = mongoose.Schema(
     },
     checkIn: Date,
     checkOut: Date,
+    actualCheckIn: Date,
+    actualCheckOut: Date,
     totalPrice: Number,
     status: {
       type: String,
-      enum: ['confirmed', 'cancelled', 'completed'],
-      default: 'confirmed',
+      enum: ['confirmed', 'pending', 'cancelled', 'completed'],
+      default: 'pending',
     }, // 'confirmed', 'cancelled', 'completed'
+    validUntil: {
+      type: Date,
+      default: new Date(Date.now() + 15 * 60 * 1000),
+    },
     createdAt: Date,
     updatedAt: Date,
   },
