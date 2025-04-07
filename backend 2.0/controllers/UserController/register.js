@@ -1,6 +1,6 @@
-const UserSchema = require('../schema/User');
-const catchAsync = require('../utils/catchAsync');
-const sendresponse = require('../utils/sendResponse');
+const UserSchema = require('../../schemas/UserSchema');
+const catchAsync = require('../../utils/catchAsync');
+const sendresponse = require('../../utils/sendResponse');
 
 const registerUser = catchAsync(async (req, res) => {
   const { name, email, password, role } = req.body;
