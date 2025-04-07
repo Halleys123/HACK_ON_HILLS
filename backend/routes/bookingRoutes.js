@@ -1,32 +1,30 @@
 const express = require('express');
+const authenticate = require('../middlewares/authenticate');
+const authorize = require('../middlewares/authorize');
 const {
   createBooking,
-  getMyBookings,
-  getHotelBookings,
-  checkInBooking,
-  checkOutBooking,
-} = require('../controller/bookingController');
-
-const { protectUser, protectHotel } = require('../middleware/authMiddleware');
-
+} = require('../controllers/BookingController/createBooking');
+const { checkIn } = require('../controllers/BookingController/checkIn');
+const { checkOut } = require('../controllers/BookingController/checkOut');
 const router = express.Router();
 
-router.post('/:roomId', protectUser, createBooking);
-router.get('/my', protectUser, getMyBookings);
-router.get('/hotel', protectHotel, getHotelBookings);
-router.post('/:id/checkin', protectHotel, checkInBooking);
-router.post('/:id/checkout', protectHotel, checkOutBooking);
+router.post(
+  '/book-room',
+  authenticate,
+  authorize(['owner', 'customer']),
+  createBooking
+);
+router.patch(
+  '/check-in/:bookingId',
+  authenticate,
+  authorize(['owner', 'customer']),
+  checkIn
+);
+router.patch(
+  '/check-out/:bookingId',
+  authenticate,
+  authorize(['owner', 'customer']),
+  checkOut
+);
 
 module.exports = router;
-
-// Add checkInDate, checkOutDate, price, and other fields to Booking
-
-// Validate that a room isn't double-booked on overlapping dates
-
-// Booking cancellation (status: cancelled)
-
-// Auto-expire unpaid/unconfirmed bookings (cron job)
-
-// Global 404 route and error handler middleware,
-
-// Rate limiting / request throttling for public APIs

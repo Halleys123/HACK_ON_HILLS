@@ -1,18 +1,21 @@
 openapi: 3.0.0
 info:
-  title: Hotel Management API
-  description: API documentation for the Hotel Management System.
+  title: Hotel Booking API
+  description: >
+    API documentation for the Hotel Booking system.
+    - Users can be either customers or owners.
+    - Hotels and rooms can only be created by owners.
+    - A room can only be created if the owner has a hotel.
+    - Payments must be completed within 15 minutes after booking.
   version: 1.0.0
 servers:
-  - url: http://localhost:5000/api
-    description: Local server
-
+  - url: http://localhost:3000/api/v1
 paths:
-  /users/register:
+  /user/register:
     post:
+      tags:
+        - User
       summary: Register a new user
-      tags:
-        - Users
       requestBody:
         required: true
         content:
@@ -26,21 +29,19 @@ paths:
                   type: string
                 password:
                   type: string
-              required:
-                - name
-                - email
-                - password
+                role:
+                  type: string
+                  enum: [customer, owner]
       responses:
-        201:
-          description: User registered successfully
-        400:
-          description: Bad request
-
-  /users/login:
+        '201':
+          description: User created successfully
+        '400':
+          description: User not created
+  /user/login:
     post:
+      tags:
+        - User
       summary: Login a user
-      tags:
-        - Users
       requestBody:
         required: true
         content:
@@ -52,33 +53,47 @@ paths:
                   type: string
                 password:
                   type: string
-              required:
-                - email
-                - password
       responses:
-        200:
+        '200':
           description: User logged in successfully
-        401:
+        '401':
           description: Invalid credentials
-
-  /users/profile:
+  /hotel:
     get:
-      summary: Get user profile
       tags:
-        - Users
+        - Hotel
+      summary: Get all hotels
+      parameters:
+        - name: city
+          in: query
+          schema:
+            type: string
+        - name: state
+          in: query
+          schema:
+            type: string
+        - name: country
+          in: query
+          schema:
+            type: string
+        - name: minRating
+          in: query
+          schema:
+            type: number
+        - name: maxRating
+          in: query
+          schema:
+            type: number
+      responses:
+        '200':
+          description: List of all hotels
+    post:
+      tags:
+        - Hotel
+      summary: Create a new hotel
+      description: Only owners can create hotels.
       security:
         - bearerAuth: []
-      responses:
-        200:
-          description: User profile retrieved successfully
-        401:
-          description: User not authenticated
-
-  /hotels/register:
-    post:
-      summary: Register a new hotel
-      tags:
-        - Hotels
       requestBody:
         required: true
         content:
@@ -86,65 +101,98 @@ paths:
             schema:
               type: object
               properties:
-                name:
+                hotelName:
                   type: string
-                email:
+                description:
                   type: string
-                password:
+                address:
                   type: string
-              required:
-                - name
-                - email
-                - password
+                city:
+                  type: string
+                state:
+                  type: string
+                country:
+                  type: string
+                zipCode:
+                  type: string
       responses:
-        201:
-          description: Hotel registered successfully
-        400:
-          description: Hotel already exists
-
-  /hotels/login:
-    post:
-      summary: Login a hotel
+        '200':
+          description: Hotel created successfully
+        '403':
+          description: Not authorized
+    delete:
       tags:
-        - Hotels
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                email:
-                  type: string
-                password:
-                  type: string
-              required:
-                - email
-                - password
-      responses:
-        200:
-          description: Hotel logged in successfully
-        401:
-          description: Invalid credentials
-
-  /hotels/profile:
-    get:
-      summary: Get hotel profile
-      tags:
-        - Hotels
+        - Hotel
+      summary: Delete all hotels
+      description: >
+        Allows owners to delete all hotels. This action requires authentication and authorization.
       security:
         - bearerAuth: []
       responses:
-        200:
-          description: Hotel profile retrieved successfully
-        404:
+        '200':
+          description: All hotels deleted successfully
+        '403':
+          description: Not authorized
+
+  /hotel/{id}:
+    delete:
+      tags:
+        - Hotel
+      summary: Delete a specific hotel
+      description: >
+        Allows owners to delete a specific hotel by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+          description: The ID of the hotel to delete.
+      responses:
+        '200':
+          description: Hotel deleted successfully
+        '403':
+          description: Not authorized
+        '404':
           description: Hotel not found
 
-  /rooms:
+  /room:
+    get:
+      tags:
+        - Room
+      summary: Get all rooms
+      parameters:
+        - name: hotelId
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: minPrice
+          in: query
+          schema:
+            type: number
+        - name: maxPrice
+          in: query
+          schema:
+            type: number
+        - name: isAvailable
+          in: query
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: List of all rooms
     post:
-      summary: Create a room
       tags:
-        - Rooms
+        - Room
+      summary: Add a new room
+      description: >
+        Only owners can add rooms, and a room can only be added if the owner has a hotel.
       security:
         - bearerAuth: []
       requestBody:
@@ -158,101 +206,56 @@ paths:
                   type: string
                 type:
                   type: string
-                price:
+                  enum: [single, double, suite]
+                pricePerNight:
                   type: number
-              required:
-                - roomNumber
-                - type
-                - price
+                capacity:
+                  type: number
       responses:
-        201:
-          description: Room created successfully
-        400:
-          description: Bad request
-
-    get:
-      summary: Get all rooms of the current hotel
+        '200':
+          description: Room added successfully
+        '403':
+          description: Not authorized
+  /add-multiple-room:
+    post:
       tags:
-        - Rooms
+        - Room
+      summary: Add multiple rooms
+      description: >
+        Allows owners to add multiple rooms at once. Owners must have a hotel to add rooms.
       security:
         - bearerAuth: []
-      responses:
-        200:
-          description: Rooms fetched successfully
-
-  /rooms/{id}:
-    get:
-      summary: Get a single room by ID
-      tags:
-        - Rooms
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Room fetched successfully
-        404:
-          description: Room not found
-
-    put:
-      summary: Update a room
-      tags:
-        - Rooms
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                roomNumber:
-                  type: string
-                type:
-                  type: string
-                price:
-                  type: number
+              type: array
+              items:
+                type: object
+                properties:
+                  roomNumber:
+                    type: string
+                  type:
+                    type: string
+                    enum: [single, double, suite]
+                  pricePerNight:
+                    type: number
+                  capacity:
+                    type: number
       responses:
-        200:
-          description: Room updated successfully
-        404:
-          description: Room not found
+        '200':
+          description: Rooms added successfully
+        '403':
+          description: Not authorized
 
+  /delete-room/{roomId}:
     delete:
+      tags:
+        - Room
       summary: Delete a room
-      tags:
-        - Rooms
-      security:
-        - bearerAuth: []
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        200:
-          description: Room deleted successfully
-        404:
-          description: Room not found
-
-  /bookings/{roomId}:
-    post:
-      summary: Create a booking
-      tags:
-        - Bookings
+      description: >
+        Allows owners to delete a specific room by its ID.
       security:
         - bearerAuth: []
       parameters:
@@ -261,72 +264,147 @@ paths:
           required: true
           schema:
             type: string
+          description: The ID of the room to delete.
       responses:
-        201:
-          description: Booking created successfully
-        404:
+        '200':
+          description: Room deleted successfully
+        '403':
+          description: Not authorized
+        '404':
           description: Room not found
 
-  /bookings/my:
-    get:
-      summary: Get user bookings
+  /delete-multiple-rooms:
+    delete:
       tags:
-        - Bookings
+        - Room
+      summary: Delete multiple rooms
+      description: >
+        Allows owners to delete multiple rooms at once.
       security:
         - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: string
+                description: Room IDs to delete
       responses:
-        200:
-          description: User bookings retrieved successfully
+        '200':
+          description: Rooms deleted successfully
+        '403':
+          description: Not authorized
+        '404':
+          description: One or more rooms not found
 
-  /bookings/hotel:
-    get:
-      summary: Get hotel bookings
-      tags:
-        - Bookings
-      security:
-        - bearerAuth: []
-      responses:
-        200:
-          description: Hotel bookings retrieved successfully
-
-  /bookings/{id}/checkin:
+  /booking/book-room:
     post:
+      tags:
+        - Booking
+      summary: Create a new booking
+      description: Payment must be completed within 15 minutes after booking.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                hotelId:
+                  type: string
+                roomId:
+                  type: string
+      responses:
+        '201':
+          description: Booking created successfully
+        '400':
+          description: Invalid request
+  /booking/check-in/{bookingId}:
+    patch:
+      tags:
+        - Booking
       summary: Check-in a guest
-      tags:
-        - Bookings
+      description: >
+        Allows hotel owners to check in a guest for a booking. The booking must not be cancelled or already checked in.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: bookingId
           in: path
           required: true
           schema:
             type: string
+          description: The ID of the booking to check in.
       responses:
-        200:
-          description: Guest checked-in successfully
-        404:
+        '200':
+          description: Guest checked in successfully
+        '400':
+          description: >
+            - Booking session already used
+            - Booking already cancelled
+            - Guest already checked in or checked out
+        '403':
+          description: Not authorized to check in guests
+        '404':
           description: Booking not found
-
-  /bookings/{id}/checkout:
-    post:
+  /booking/check-out/{bookingId}:
+    patch:
+      tags:
+        - Booking
       summary: Check-out a guest
-      tags:
-        - Bookings
+      description: >
+        Allows hotel owners to check out a guest for a booking. The booking must be checked in first.
       security:
         - bearerAuth: []
       parameters:
-        - name: id
+        - name: bookingId
           in: path
           required: true
           schema:
             type: string
+          description: The ID of the booking to check out.
       responses:
-        200:
-          description: Guest checked-out successfully
-        404:
+        '200':
+          description: Guest checked out successfully
+        '400':
+          description: >
+            - Guest not checked in
+            - Booking already checked out
+        '403':
+          description: Not authorized to check out guests
+        '404':
           description: Booking not found
-
+  /pay:
+    post:
+      tags:
+        - Payment
+      summary: Make a payment
+      description: Payment must be completed within 15 minutes after booking.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                bookingId:
+                  type: string
+                amount:
+                  type: number
+                paymentMethod:
+                  type: string
+                  enum: [card, upi, netbanking, wallet, cash]
+      responses:
+        '200':
+          description: Payment successful
+        '400':
+          description: Invalid request
 components:
   securitySchemes:
     bearerAuth:
