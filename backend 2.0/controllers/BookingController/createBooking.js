@@ -4,19 +4,35 @@ const BookingSchema = require('../../schemas/BookingSchema');
 const catchAsync = require('../../utils/catchAsync');
 const sendResponse = require('../../utils/sendResponse');
 
+const startBookingExpirationTimer = (bookingId, roomId) => {
+  const FIFTEEN_MINUTES = 1 * 60 * 1000;
+  setTimeout(async () => {
+    try {
+      const booking = await BookingSchema.findById(bookingId);
+      if (booking && booking.status === 'pending') {
+        booking.status = 'cancelled';
+        await booking.save();
+        await RoomSchema.findByIdAndUpdate(roomId, { isAvailable: true });
+        console.log(
+          `Booking ${bookingId} expired after 15 minutes. Room ${roomId} is now available.`
+        );
+      }
+    } catch (err) {
+      console.error('Error expiring booking:', err);
+    }
+  }, FIFTEEN_MINUTES);
+};
 const createBooking = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
   const { hotelId, roomId } = req.body;
+
   if (!hotelId || !roomId) {
     return sendResponse(
       res,
       400,
       false,
       "We don't know in which Hotel or Room you want to stay",
-      {
-        hotelId: hotelId,
-        roomId: roomId,
-      }
+      { hotelId, roomId }
     );
   }
 
@@ -29,15 +45,14 @@ const createBooking = catchAsync(async (req, res, next) => {
   if (!room) {
     return sendResponse(res, 404, false, 'There is no such room available', {});
   }
+
   if (!room.isAvailable) {
     return sendResponse(
       res,
       409,
       false,
       'Room is busy, Please try again later',
-      {
-        room,
-      }
+      { room }
     );
   }
 
@@ -45,8 +60,9 @@ const createBooking = catchAsync(async (req, res, next) => {
     hotelId,
     roomId,
     userId,
+    status: 'pending',
   });
-  // If after saving any error occurs delete the booking also
+
   let saveBooking;
   try {
     saveBooking = await booking.save();
@@ -62,14 +78,14 @@ const createBooking = catchAsync(async (req, res, next) => {
     throw new Error('Error saving booking');
   }
 
+  startBookingExpirationTimer(saveBooking._id, roomId);
+
   return sendResponse(
     res,
     201,
     true,
     'You have 15 minutes to complete your payment, or the booking will be cancelled',
-    {
-      saveBooking,
-    }
+    { saveBooking }
   );
 });
 

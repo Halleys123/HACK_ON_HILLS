@@ -5,6 +5,7 @@ const sendResponse = require('../../utils/sendResponse');
 
 const dummyPay = catchAsync(async (req, res, next) => {
   // Extract bookingId and (optionally) payment details from the request body.
+  const { id: userId } = req.user;
   const { bookingId, amount, paymentMethod } = req.body;
 
   if (!bookingId) {
@@ -21,6 +22,15 @@ const dummyPay = catchAsync(async (req, res, next) => {
   const booking = await BookingSchema.findById(bookingId);
   if (!booking) {
     return sendResponse(res, 404, false, 'Booking not found', {});
+  }
+  if (booking.userId != userId) {
+    return sendResponse(
+      res,
+      403,
+      false,
+      'You are not authorized to make a payment for this booking.',
+      {}
+    );
   }
   if (new Date(Date.now()) > new Date(booking.validUntil)) {
     return sendResponse(
