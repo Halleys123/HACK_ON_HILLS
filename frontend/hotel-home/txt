@@ -1,0 +1,11 @@
+@REM echo "# hotel-home-2" >> README.md
+@REM git init
+@REM git add README.md
+@REM git commit -m "first commit"
+@REM git branch -M main
+@REM git remote add origin https://github.com/ShibhuRathore/hotel-home-2.git
+@REM git push -u origin main
+@REM …or push an existing repository from the command line
+@REM git remote add origin https://github.com/ShibhuRathore/hotel-home-2.git
+@REM git branch -M main
+@REM git push -u origin main
