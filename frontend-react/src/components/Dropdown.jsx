@@ -12,12 +12,10 @@ export default function Dropdown({
   const [selected, setSelected] = useState(null);
   const dropdownRef = useRef(null);
 
-  // Toggle dropdown open/close state
   const toggleDropdown = () => {
     setIsOpen((prev) => !prev);
   };
 
-  // Handle option selection
   const handleSelect = (option) => {
     setSelected(option);
     setIsOpen(false);
