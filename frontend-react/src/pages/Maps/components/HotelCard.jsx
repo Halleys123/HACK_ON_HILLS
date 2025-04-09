@@ -8,9 +8,15 @@ function HotelCard({
   price,
   currency = '$',
   period = '/night',
+  onClick,
 }) {
   return (
-    <div className='max-w-xs w-full rounded-lg overflow-hidden bg-white'>
+    <div
+      onClick={() => {
+        if (onClick) onClick();
+      }}
+      className='max-w-xs w-full rounded-lg overflow-hidden bg-white hover:bg-neutral-50 cursor-pointer hover:outline outline-neutral-300'
+    >
       <div className='relative h-48 overflow-hidden'>
         <img
           src={image}
