@@ -1,0 +1,320 @@
+.hero {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  font-family: sans-serif;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.4s ease;
+}
+
+.hero-img.blurred {
+  filter: blur(6px);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1;
+}
+
+/* Heading and Sliding Text */
+.hero-text {
+  position: absolute;
+  top: 15%;
+  width: 100%;
+  text-align: center;
+  color: white;
+  z-index: 2;
+  padding: 0 1rem;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Vertical Slide */
+.vertical-slide {
+  height: 2rem;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+.slide-track {
+  display: flex;
+  flex-direction: column;
+  animation: verticalScroll 20s linear infinite;
+}
+
+.slide-track span {
+  height: 2rem;
+  line-height: 2rem;
+  font-size: 1.1rem;
+  color: #fff;
+  white-space: nowrap;
+  margin-bottom: 10px;
+}
+
+@keyframes verticalScroll {
+  0% { transform: translateY(0); }
+  25% { transform: translateY(-2.5rem); }
+  50% { transform: translateY(-5rem); }
+  75% { transform: translateY(-7.5rem); }
+  100% { transform: translateY(0); }
+}
+
+/* Booking Box Section */
+.booking-container {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  padding: 0 1rem;
+}
+
+.booking-box {
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  padding: 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  transition: all 0.3s ease;
+}
+
+.booking-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+}
+
+.field label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.field input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+  width: 160px;
+}
+
+.button-wrapper {
+  display: flex;
+  align-items: flex-end;
+}
+
+.search-btn {
+  background: black;
+  color: white;
+  padding: 10px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.search-btn:hover {
+  background: #222;
+}
+
+/* Room Cards */
+/* ...existing styles stay untouched... */
+
+/* Update only or add below */
+
+/* Cards Popup Container */
+.cards-container {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 999;
+  padding: 2rem;
+  width: auto;
+  max-width: 95vw;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(10px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Close Button (top-right inside the container) */
+.close-button {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: #000;
+  color: #fff;
+  font-size: 1.5rem;
+  border: none;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  cursor: pointer;
+  z-index: 1001;
+}
+
+/* Card Row – Horizontal Scroll */
+.cards-row {
+  display: flex;
+  flex-direction: row;
+  gap: 1.5rem;
+  overflow-x: auto;
+  justify-content: center;
+  padding: 1rem;
+  max-width: 100%;
+  scroll-behavior: smooth;
+}
+
+.cards-row::-webkit-scrollbar {
+  display: none;
+}
+.cards-row {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Individual Room Card */
+.card {
+  width: 240px;
+  height: 360px;
+  perspective: 1000px;
+  flex-shrink: 0;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeInUp 0.6s ease;
+  position: relative;
+}
+
+/* Inner wrapper for flipping */
+.flip-card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transition: transform 0.8s ease;
+  transform-style: preserve-3d;
+}
+
+/* Flip transformation when active */
+.card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+/* Front and back */
+.card-front,
+.card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Front side of the card */
+.card-front {
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Room image */
+.card-img {
+  width: 100%;
+  height: 140px;
+  object-fit: cover;
+}
+
+/* Card content */
+.card-content {
+  padding: 1rem;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-content h3 {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-content p {
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-content span {
+  font-weight: bold;
+  color: #222;
+  margin-bottom: 0.7rem;
+}
+
+/* Button styling */
+.book-btn {
+  margin-top: auto;
+  background: black;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.book-btn:hover {
+  background: #333;
+}
+
+/* Back side of the card */
+.card-back {
+  transform: rotateY(180deg);
+  background: rgba(0, 0, 0, 0.9);
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* centers vertically */
+  align-items: center;     /* centers horizontally */
+  padding: 1rem;
+  box-sizing: border-box;
+  color: white;
+  text-align: center;
+}
+
+
+
+/* QR Image */
+.qr-img {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  margin-bottom: 1rem;
+}
