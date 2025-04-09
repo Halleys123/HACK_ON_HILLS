@@ -2,12 +2,15 @@ import React, { useState } from 'react';
 import { Calendar, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import DatePickerHotelLanding from '../../LandingPage/components/DatePickerHotelLandning';
 import landing from '@/assets/hotel.jpg';
+import { useMessage } from '@/hooks/useMessage';
 
 export default function SearchRooms() {
   const [isGuestDropdownOpen, setIsGuestDropdownOpen] = useState(false);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+
+  const message = useMessage();
 
   const toggleGuestDropdown = () => {
     setIsGuestDropdownOpen(!isGuestDropdownOpen);
@@ -124,7 +127,12 @@ export default function SearchRooms() {
             </button>
 
             {isGuestDropdownOpen && (
-              <div className='absolute mt-1 w-full bg-white rounded-lg shadow-lg z-10 p-4'>
+              <div
+                style={{
+                  transform: 'translateY(-220px)',
+                }}
+                className='absolute mt-1 w-full bg-white rounded-lg shadow-lg z-10 p-4'
+              >
                 <div className='flex justify-between items-center mb-4'>
                   <span className='font-medium'>Adults</span>
                   <div className='flex items-center gap-3'>
@@ -190,7 +198,16 @@ export default function SearchRooms() {
         </div>
 
         <div className='flex flex-col gap-2 justify-end'>
-          <button className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium'>
+          <button
+            onClick={() => {
+              message.success(
+                'Searching...',
+                'Searching for available rooms in the current hotel',
+                5000
+              );
+            }}
+            className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium'
+          >
             Search Availability
           </button>
         </div>

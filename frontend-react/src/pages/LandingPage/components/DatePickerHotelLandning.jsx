@@ -128,7 +128,7 @@ const DatePickerHotelLanding = () => {
       {isOpen && (
         <div
           style={{
-            transform: 'translateY(-240px)',
+            transform: 'translateY(-320px)',
           }}
           className='absolute t-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10'
         >

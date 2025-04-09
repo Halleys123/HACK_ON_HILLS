@@ -1,7 +1,7 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
 
-export default function RoomCard({ room }) {
+export default function RoomCard({ room, handleBookNow }) {
   return (
     <div
       key={room.id}
@@ -61,7 +61,10 @@ export default function RoomCard({ room }) {
               <p className='text-xs text-gray-500'>Includes taxes & fees</p>
             </div>
 
-            <button className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'>
+            <button
+              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+              onClick={() => handleBookNow(room)}
+            >
               Book Now
             </button>
           </div>

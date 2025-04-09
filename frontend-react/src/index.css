@@ -38,3 +38,23 @@
   border-radius: 10px;
   /* border: 1px solid rgba(255, 255, 255, 0.18); */
 }
+
+@keyframes animate-message-box {
+  0% {
+    transform: translateX(500px) scaleX(0.1) scaleY(0.1);
+    width: 10px;
+    height: 10px;
+  }
+  25% {
+    transform: scaleX(0.4) scaleY(1);
+  }
+  100% {
+    transform: translateX(0) scaleX(1) scaleY(1);
+  }
+}
+
+.animate-message-box {
+  animation: animate-message-box 0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
+  animation-fill-mode: forwards;
+  transform-origin: left;
+}
