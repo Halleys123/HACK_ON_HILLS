@@ -1,1 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
 @import 'tailwindcss';
+
+@theme {
+  --font-mont: 'Roboto', sans-serif;
+}
+
+@keyframes infinite-scroll-auth-page {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+.infinite-scroll-auth-page {
+  will-change: transform;
+  animation: infinite-scroll-auth-page 20s linear infinite;
+}
+/* .infinite-scroll-auth-page:hover {
+  animation-play-state: paused;
+} */
+.bg-blur {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  backdrop-filter: blur(11.5px);
+  -webkit-backdrop-filter: blur(11.5px);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+}
