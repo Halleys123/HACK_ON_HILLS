@@ -126,7 +126,12 @@ const DatePickerHotelLanding = () => {
       </button>
 
       {isOpen && (
-        <div className='absolute mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10'>
+        <div
+          style={{
+            transform: 'translateY(-240px)',
+          }}
+          className='absolute t-0 mt-1 p-3 bg-white border border-gray-300 rounded-md shadow-lg z-10'
+        >
           <div className='mb-2 flex items-center justify-between'>
             <button
               onClick={prevMonth}
