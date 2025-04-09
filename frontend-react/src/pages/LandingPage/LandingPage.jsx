@@ -1,5 +1,8 @@
 import React from 'react';
 
+// import landing from '@assets/landing.jpg';
+// import Navbar from './components/Navbar';
+
 export default function LandingPage() {
-  return <div className='flex flex-col gap-4'></div>;
+  return <></>;
 }

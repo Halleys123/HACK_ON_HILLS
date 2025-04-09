@@ -4,6 +4,7 @@ import Signup from '@/pages/Signup';
 import AuthLayout from './layouts/AuthLayout/AuthLayout';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage/LandingPage';
+import Maps from './pages/Maps/Maps';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path='login' element={<Login />} />
           <Route path='signup' element={<Signup />} />
         </Route>
+        <Route path='maps' element={<Maps />} />
       </Routes>
     </BrowserRouter>
   );
