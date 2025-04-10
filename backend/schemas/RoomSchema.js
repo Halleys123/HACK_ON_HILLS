@@ -12,6 +12,15 @@ const RoomSchema = mongoose.Schema(
       required: true,
       unique: true, // unique room number in the hotel
     },
+    title: {
+      type: String,
+      default: '2 Double Beds, 1 King Bed',
+    },
+    description: {
+      type: String,
+      default:
+        'This is a good room that is located in your hotel. It has all the basic amenities and is very comfortable.',
+    },
     type: {
       type: String,
       enum: ['single', 'double', 'suite'],
@@ -21,10 +30,15 @@ const RoomSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    capacity: {
+    maxAdults: {
       type: Number,
-      required: true,
-    }, // how many people it fits
+      default: 2,
+    },
+    maxChildren: {
+      type: Number,
+      default: 2,
+    },
+    rating: { type: Number, max: 5, min: 1, default: 5 }, // avg rating
     isAvailable: {
       type: Boolean,
       default: true,

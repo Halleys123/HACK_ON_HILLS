@@ -56,4 +56,14 @@ const getAllHotels = catchAsync(async (req, res, next) => {
   );
 });
 
-module.exports = { getAllHotels };
+const getHotel = catchAsync(async (req, res, next) => {
+  const { hotelId } = req.params;
+  const hotel = await HotelSchema.findById(hotelId);
+  console.log(hotelId, hotel);
+  if (!hotel) {
+    return sendResponse(res, 404, false, 'Hotel not found', {});
+  }
+  sendResponse(res, 200, true, 'Hotel details found', { hotel });
+});
+
+module.exports = { getAllHotels, getHotel };

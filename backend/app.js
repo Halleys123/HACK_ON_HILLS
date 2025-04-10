@@ -6,6 +6,7 @@ const swaggerUi = require('swagger-ui-express');
 const express = require('express');
 const dotenv = require('dotenv');
 const morgan = require('morgan');
+const path = require('path');
 
 const userRoutes = require('./routes/userRoutes');
 const hotelRoutes = require('./routes/hotelRoutes');
@@ -23,10 +24,27 @@ connectDB();
 
 const app = express();
 
-app.use(express.json());
 app.use(cors());
-app.use(helmet());
+app.use(express.json());
+// app.use(
+//   helmet({
+//     contentSecurityPolicy: {
+//       directives: {
+//         defaultSrc: ["'self'"],
+//         scriptSrc: ["'self'", "'unsafe-inline'"],
+//         styleSrc: ["'self'", "'unsafe-inline'"],
+//         imgSrc: ["'self'", 'data:', 'blob:'],
+//         fontSrc: ["'self'", 'data:'],
+//       },
+//     },
+//   })
+// );
 app.use(morgan('dev'));
+
+app.use(
+  '/api/v1/images',
+  express.static(path.join(__dirname, 'public/images'))
+);
 
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1/hotel', hotelRoutes);

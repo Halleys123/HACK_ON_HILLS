@@ -1,10 +1,18 @@
+const HotelSchema = require('../../schemas/HotelSchema');
 const RoomSchema = require('../../schemas/RoomSchema');
 const catchAsync = require('../../utils/catchAsync');
 const sendResponse = require('../../utils/sendResponse');
 
 const addRoom = catchAsync(async (req, res, next) => {
-  const { hotelId } = req.user;
-  if (!hotelId) {
+  const { hotelId } = req.body;
+  const { user } = req;
+  let hotel;
+  if (user.role == 'owner') {
+    hotel = await HotelSchema.find({
+      ownerId: user._id,
+    });
+  }
+  if (!hotel) {
     return sendResponse(
       res,
       403,
@@ -13,13 +21,20 @@ const addRoom = catchAsync(async (req, res, next) => {
       {}
     );
   }
-  const { roomNumber, type, pricePerNight, capacity } = req.body;
+  const {
+    roomNumber,
+    type,
+    pricePerNight,
+    maxAdults = 1,
+    maxChildren = 0,
+  } = req.body;
   const newRoom = new RoomSchema({
     hotelId,
     roomNumber,
     type,
     pricePerNight,
-    capacity,
+    maxAdults,
+    maxChildren,
   });
   const roomSave = await newRoom.save();
   if (!roomSave) {
@@ -29,8 +44,17 @@ const addRoom = catchAsync(async (req, res, next) => {
 });
 
 const addMultipleRooms = catchAsync(async (req, res, next) => {
-  const { hotelId } = req.user;
-  if (!hotelId) {
+  const { hotelId } = req.body;
+  const { user } = req;
+
+  let hotel = null;
+  if (user.role == 'owner') {
+    hotel = await HotelSchema.find({
+      ownerId: user.id,
+    });
+  }
+
+  if (!hotel) {
     return sendResponse(
       res,
       403,
@@ -44,12 +68,14 @@ const addMultipleRooms = catchAsync(async (req, res, next) => {
     return sendResponse(res, 400, false, 'Invalid rooms data provided', {});
   }
 
+  console.log(rooms);
   const newRooms = rooms.map((room) => ({
     hotelId,
     roomNumber: room.roomNumber,
     type: room.type,
     pricePerNight: room.pricePerNight,
-    capacity: room.capacity,
+    maxAdults: room.maxAdults,
+    maxChildren: room.maxChildren,
   }));
 
   console.log(newRooms);

@@ -38,6 +38,14 @@ const HotelSchema = mongoose.Schema(
     },
     images: [String], // image URLs
     rating: { type: Number, max: 5, min: 1, default: 5 }, // avg rating
+    coordinates: {
+      type: [Number], // [longitude, latitude]
+      index: '2dsphere',
+    },
+    primaryImage: {
+      type: String,
+      // required: true,
+    },
     createdAt: Date,
     updatedAt: Date,
   },

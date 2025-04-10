@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
 const User = require('../schemas/UserSchema'); // Import User model
-const Hotel = require('../schemas/HotelSchema');
 
 const authorize = (acceptedRoles) => async (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1]; // Extract token from Authorization header
@@ -12,20 +11,12 @@ const authorize = (acceptedRoles) => async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token using secret
-    req.user = decoded; // Attach decoded user info to request object
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify token using secret // Attach decoded user info to request object
 
     // Fetch user from database using decoded user ID
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: 'User not found.' });
-    }
-    let hotel;
-    if (user.role == 'owner') {
-      hotel = await Hotel.find({
-        ownerId: user.id,
-      });
-      req.user.hotelId = hotel.length ? hotel[0]._id : null;
     }
 
     // Check if the user's role is in the acceptedRoles array

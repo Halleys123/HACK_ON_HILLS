@@ -24,7 +24,7 @@ const startBookingExpirationTimer = (bookingId, roomId) => {
 };
 const createBooking = catchAsync(async (req, res, next) => {
   const { id: userId } = req.user;
-  const { hotelId, roomId } = req.body;
+  const { hotelId, roomId, adults, children, specialRequests = '' } = req.body;
 
   if (!hotelId || !roomId) {
     return sendResponse(
@@ -61,6 +61,12 @@ const createBooking = catchAsync(async (req, res, next) => {
     roomId,
     userId,
     status: 'pending',
+    checkInStatus: 'upcoming',
+    specialRequests,
+    guests: {
+      adults: adults || 1,
+      children: children || 0,
+    },
   });
 
   let saveBooking;

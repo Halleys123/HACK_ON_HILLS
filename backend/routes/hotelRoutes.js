@@ -9,10 +9,14 @@ const {
 
 const authorize = require('../middlewares/authorize');
 const authenticate = require('../middlewares/authenticate');
-const { getAllHotels } = require('../controllers/HotelController/getHotels');
+const {
+  getAllHotels,
+  getHotel,
+} = require('../controllers/HotelController/getHotels');
 
 router.get('/', getAllHotels);
-router.post('/create-hotel', authenticate, authorize(['owner']), createHotel);
+router.get('/:hotelId', getHotel); // Assuming you want to get a specific hotel by ID
+router.post('/', authenticate, authorize(['owner']), createHotel);
 router.delete('/:id', authenticate, authorize(['owner']), deleteAllHotel);
 router.delete('/', authenticate, authorize(['owner']), deleteHotel);
 
