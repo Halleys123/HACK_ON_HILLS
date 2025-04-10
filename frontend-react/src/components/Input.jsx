@@ -13,7 +13,7 @@ export default function Input({ type, placeholder, className, ...props }) {
 
   return (
     <div
-      className={`flex flex-row items-center outline-2 outline-neutral-200 h-8 shrink-0 rounded-sm w-full focus-within:outline-neutral-500 transition-colors duration-200 ${className}`}
+      className={`flex flex-row items-center outline-2 outline-neutral-200 bg-white sm:bg-transparent sm:outline-neutral-200 h-8 shrink-0 rounded-sm w-full focus-within:outline-neutral-500 transition-colors duration-200 ${className}`}
     >
       <input
         {...props}

@@ -1,11 +1,41 @@
 import Button from '@/components/Button';
-import Dropdown from '@/components/Dropdown';
 import Input from '@/components/Input';
 import Logo from '@/components/Logo';
-import React from 'react';
-import { Link } from 'react-router-dom';
+import { useMessage } from '@/hooks/useMessage';
+import customFetch from '@/utils/Fetch';
+import React, { useRef } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const message = useMessage();
+  const navigate = useNavigate();
+
+  const ref = useRef(null);
+
+  async function login(e) {
+    e.preventDefault();
+    const formData = new FormData(ref.current);
+    const data = Object.fromEntries(formData.entries());
+    console.log(data);
+
+    const response = await customFetch('/user/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response);
+    if (response.error) {
+      message.error('Error Occured', response.data.message);
+    } else {
+      message.success('Success', response.data.message);
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user_id', response.data.data.user.id);
+
+      navigate('/hotels');
+    }
+  }
   return (
     <>
       <Logo />
@@ -22,7 +52,11 @@ export default function Login() {
           got you.."
         </span>
 
-        <div className='grid grid-cols-2 gap-4 mt-4'>
+        <form
+          ref={ref}
+          onSubmit={login}
+          className='grid grid-cols-2 gap-4 mt-4'
+        >
           <Input
             placeholder={'Registered Email Address'}
             type={'email'}
@@ -36,8 +70,10 @@ export default function Login() {
             name='password'
           />
 
-          <Button className='max-w-32'>Login</Button>
-        </div>
+          <Button type='submit' className='max-w-32'>
+            Login
+          </Button>
+        </form>
         <span className='text-neutral-500 text-sm font-mont mt-8'>
           Don't have an account yet?{' '}
           <Link to='/signup' className='text-indigo-500'>

@@ -50,7 +50,7 @@ export default function Dropdown({
         value={selected?.value}
       />
       <div
-        className='flex justify-between items-center border border-gray-300 rounded-sm px-3 py-2 cursor-pointer'
+        className='flex justify-between items-center border bg-white sm:bg-transparent border-neutral-100 sm:border-neutral-300 rounded-sm px-3 py-2 cursor-pointer'
         onClick={toggleDropdown}
       >
         <span className='text-sm text-gray-700'>

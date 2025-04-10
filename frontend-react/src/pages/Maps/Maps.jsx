@@ -101,7 +101,7 @@ export default function Maps() {
   }, []);
 
   return (
-    <div className='flex flex-row gap-6 p-12 h-screen w-screen overflow-hidden'>
+    <div className='flex flex-row gap-6 p-12 mt-16 h-screen w-screen overflow-hidden'>
       <FiltersSections />
       <div
         id='map-area'

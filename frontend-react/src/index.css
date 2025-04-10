@@ -58,3 +58,20 @@
   animation-fill-mode: forwards;
   transform-origin: left;
 }
+
+@keyframes reel-animation {
+  0% {
+    transform: translateY(50px) scaleY(0);
+  }
+  10% {
+    transform: translateY(0) scaleY(0.1);
+  }
+  100% {
+    transform: translateY(0) scaleY(1);
+  }
+}
+
+.reel-animation {
+  animation: reel-animation 0.5s ease-out forwards;
+  transform-origin: top;
+}
