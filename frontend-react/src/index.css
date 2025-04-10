@@ -86,7 +86,7 @@
 }
 
 .loader {
-  animation: loader 1s linear infinite;
+  animation: loader 1s infinite;
 }
 
 @keyframes loadIncome {

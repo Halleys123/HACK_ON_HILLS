@@ -5,7 +5,7 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const DatePickerHotelLanding = () => {
+const DatePickerHotelLanding = ({ className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
@@ -105,7 +105,7 @@ const DatePickerHotelLanding = () => {
   return (
     <div className='relative'>
       <button
-        className='flex items-center justify-between w-full flex-1 max-w-64 px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-50 focus:outline-none'
+        className={`flex items-center justify-between w-full flex-1 max-w-64 px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm text-gray-700 hover:bg-gray-50 focus:outline-none ${className}`}
         onClick={() => setIsOpen(!isOpen)}
       >
         <div className='flex items-center'>

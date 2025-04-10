@@ -1,17 +1,23 @@
 import React from 'react';
 import { Heart } from 'lucide-react';
+import useBookRoom from '@/hooks/useBookRoom';
+import { useMessage } from '@/hooks/useMessage';
 
-export default function RoomCard({ room, handleBookNow }) {
+export default function RoomCard({ room }) {
+  const message = useMessage();
+  const { rooms, addRoom, removeRoom } = useBookRoom();
+  const hasThisRoom = rooms.some((r) => r === room._id);
+
   return (
     <div
-      key={room.id}
+      key={room._id}
       className='mx-6 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'
     >
       <div className='flex flex-col md:flex-row'>
         {/* Room Image */}
         <div className='relative w-72'>
           <img
-            src={room.image}
+            src={'http://localhost:3000/api/v1/images/' + room._id + '.jpg'}
             alt={room.name}
             className='aspect-video h-40 md:h-full object-cover'
           />
@@ -23,7 +29,7 @@ export default function RoomCard({ room, handleBookNow }) {
         {/* Room Details */}
         <div className='p-6 md:w-full flex flex-col'>
           <div className='flex-grow'>
-            <h3 className='text-xl font-semibold mb-2'>{room.name}</h3>
+            <h3 className='text-xl font-semibold mb-2'>{room.title}</h3>
             <p className='text-gray-600 mb-4'>{room.description}</p>
 
             <div className='flex flex-wrap gap-2 mb-4'>
@@ -50,23 +56,39 @@ export default function RoomCard({ room, handleBookNow }) {
           <div className='flex justify-between items-end mt-6'>
             <div>
               <div className='flex items-center gap-1'>
-                <span className='text-2xl font-bold'>₹{room.price}</span>
-                {room.originalPrice && (
+                <span className='text-2xl font-bold'>
+                  ₹{room.pricePerNight}
+                </span>
+                {room.pricePerNight && (
                   <span className='text-gray-500 line-through'>
-                    ₹{room.originalPrice}
+                    ₹{room.pricePerNight}
                   </span>
                 )}
                 <span className='text-sm text-gray-500'>/night</span>
               </div>
               <p className='text-xs text-gray-500'>Includes taxes & fees</p>
             </div>
-
-            <button
-              className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
-              onClick={() => handleBookNow(room)}
-            >
-              Book Now
-            </button>
+            {!hasThisRoom ? (
+              <button
+                className='px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+                onClick={() => {
+                  message.success('Success', 'Room added to booking!');
+                  addRoom(room);
+                }}
+              >
+                Add Room
+              </button>
+            ) : (
+              <button
+                onClick={() => {
+                  message.success('Success', 'Room removed from booking!');
+                  removeRoom(room);
+                }}
+                className='px-6 py-2 bg-gray-300 text-white rounded-lg'
+              >
+                Remove Room
+              </button>
+            )}
           </div>
         </div>
       </div>

@@ -8,10 +8,13 @@ import {
   Bell,
   Filter,
   MoreVertical,
+  Loader,
+  RefreshCcw,
 } from 'lucide-react';
 import customFetch from '@/utils/Fetch';
 import useLoading from '@/hooks/useLoading';
 import { useMessage } from '@/hooks/useMessage';
+import { useLoggedIn } from '@/hooks/useLoggedIn';
 
 export default function HotelStaffDashboard() {
   const [activeTab, setActiveTab] = useState('upcoming');
@@ -25,7 +28,7 @@ export default function HotelStaffDashboard() {
     message: loadingMessage,
     setMessage,
   } = useLoading(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useLoggedIn();
   const [user, setUser] = useState(null);
 
   // Mock data for reservations
@@ -36,8 +39,8 @@ export default function HotelStaffDashboard() {
       roomNumber: '301',
       checkInDate: '2025-04-10',
       checkOutDate: '2025-04-15',
-      status: 'upcoming',
-      paymentStatus: 'paid',
+      checkInStatus: 'upcoming',
+      status: 'paid',
       guests: 2,
       specialRequests: 'High floor, away from elevator',
     },
@@ -47,8 +50,8 @@ export default function HotelStaffDashboard() {
       roomNumber: '204',
       checkInDate: '2025-04-09',
       checkOutDate: '2025-04-12',
-      status: 'checked-in',
-      paymentStatus: 'paid',
+      checkInStatus: 'checked-in',
+      status: 'paid',
       guests: 1,
       specialRequests: 'Extra pillows',
     },
@@ -58,8 +61,8 @@ export default function HotelStaffDashboard() {
       roomNumber: '512',
       checkInDate: '2025-04-08',
       checkOutDate: '2025-04-10',
-      status: 'checked-in',
-      paymentStatus: 'paid',
+      checkInStatus: 'checked-in',
+      status: 'paid',
       guests: 3,
       specialRequests: '',
     },
@@ -69,8 +72,8 @@ export default function HotelStaffDashboard() {
       roomNumber: '105',
       checkInDate: '2025-04-05',
       checkOutDate: '2025-04-10',
-      status: 'checked-in',
-      paymentStatus: 'paid',
+      checkInStatus: 'checked-in',
+      status: 'paid',
       guests: 2,
       specialRequests: 'Quiet room',
     },
@@ -106,6 +109,10 @@ export default function HotelStaffDashboard() {
   }
 
   useEffect(() => {
+    if (!isLoggedIn) checkIsLoggedIn();
+  }, [isLoggedIn]);
+
+  useEffect(() => {
     // Set current date in a readable format
     const date = new Date();
     setCurrentDate(
@@ -117,9 +124,7 @@ export default function HotelStaffDashboard() {
       })
     );
   }, []);
-  useEffect(() => {
-    if (!isLoggedIn) checkIsLoggedIn();
-  }, [isLoggedIn]);
+
   const handleCheckIn = (id) => {
     setReservations(
       reservations.map((reservation) =>
@@ -208,6 +213,9 @@ export default function HotelStaffDashboard() {
             <button className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
               <Calendar size={16} className='mr-2' />
               Today
+            </button>
+            <button className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
+              <RefreshCcw size={16} className='mr-2' />
             </button>
           </div>
         </div>

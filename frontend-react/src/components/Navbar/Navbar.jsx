@@ -7,6 +7,7 @@ import Button from '../Button';
 import UserDropdown from './UserDropdown';
 import Loading from '../Loading';
 import useLoading from '@/hooks/useLoading';
+import { useLoggedIn } from '@/hooks/useLoggedIn';
 
 const links = [
   { name: 'Home', path: '/' },
@@ -15,7 +16,7 @@ const links = [
 ];
 
 export default function Navbar() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const { isLoggedIn, setIsLoggedIn } = useLoggedIn();
   const [user, setUser] = useState(null);
 
   const {
@@ -40,7 +41,7 @@ export default function Navbar() {
       setLoading(false);
       if (response.error) {
         setIsLoggedIn(false);
-        message.messaage(
+        message.message(
           'Not Authorized',
           'You are not logged in, Please login to get full experience'
         );
@@ -60,7 +61,7 @@ export default function Navbar() {
   }, []);
 
   return (
-    <div className='flex flex-row justify-between items-center bg-white shadow-md px-4 py-2 w-full fixed top-0 left-0 z-10'>
+    <div className='flex flex-row justify-between items-center bg-white shadow-md px-4 py-2 w-full fixed top-0 left-0 z-30'>
       <Loading visible={loading} text={loadingMessage} />
       <Logo />
       <div className='flex flex-row gap-3'>

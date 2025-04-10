@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import FiltersSections from './components/FiltersSections';
 import landing from '@/assets/landing.jpg';
 import HotelCard from './components/HotelCard';
@@ -12,41 +12,10 @@ import 'leaflet/dist/leaflet.css';
 // Import marker icon assets to fix the broken marker icon issue
 import markerIcon from '@assets/marker.png';
 import markerIconShadow from 'leaflet/dist/images/marker-shadow.png';
-
-const hotels = [
-  {
-    id: 1,
-    image: landing,
-    title: 'Montmartre Majesty Hotel',
-    location: 'Marseille, France',
-    price: '160',
-    originalPrice: '250',
-    rating: 4.7,
-    reviews: 2578,
-    coordinates: [43.296482, 5.36978], // Marseille coordinates
-  },
-  {
-    id: 2,
-    image: landing,
-    title: 'Elysée Retreat',
-    location: 'Paris, France',
-    price: '150',
-    originalPrice: '240',
-    rating: 4.8,
-    reviews: 1236,
-    coordinates: [48.856614, 2.352222], // Paris coordinates
-  },
-  {
-    id: 3,
-    image: landing,
-    title: 'Versailles Vista Inn',
-    location: 'Strasbourg, France',
-    price: '220',
-    rating: 4.7,
-    reviews: 1356,
-    coordinates: [48.573405, 7.752111], // Strasbourg coordinates
-  },
-];
+import customFetch from '@/utils/Fetch';
+import { useMessage } from '@/hooks/useMessage';
+import useLoading from '@/hooks/useLoading';
+import Loading from '@/components/Loading';
 
 // Fix for default marker icons
 delete L.Icon.Default.prototype._getIconUrl;
@@ -63,6 +32,36 @@ export default function Maps() {
   const navigate = useNavigate();
   const mapRef = useRef(null);
   const mapInstance = useRef(null);
+
+  const message = useMessage();
+  const {
+    loading,
+    setLoading,
+    message: loaderMessage,
+    setMessage,
+  } = useLoading();
+
+  const [hotels, setHotels] = useState([]);
+
+  async function getHotels() {
+    // simple fetch no need for checking location etc
+    setLoading(true);
+    setMessage('Fetching Hotels...');
+    const response = await customFetch('/hotel', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    setLoading(false);
+    if (response.error) {
+      message.error('Error Occured', response.data.message);
+    } else {
+      setHotels(response.data.data.hotels);
+      console.log(response.data.data.hotels);
+      message.success('Success', response.data.message);
+    }
+  }
 
   useEffect(() => {
     if (mapRef.current && !mapInstance.current) {
@@ -87,7 +86,7 @@ export default function Maps() {
           `);
         }
       });
-
+      getHotels();
       mapInstance.current = map;
     }
 
@@ -103,6 +102,7 @@ export default function Maps() {
   return (
     <div className='flex flex-row gap-6 p-12 mt-16 h-screen w-screen overflow-hidden'>
       <FiltersSections />
+      <Loading visible={loading} text={loaderMessage} />
       <div
         id='map-area'
         className='pb-4 px-1 flex flex-col gap-3 flex-3/4 pt-2 ml-6 overflow-scroll'
@@ -121,18 +121,27 @@ export default function Maps() {
           <div
             ref={mapRef}
             id='map'
-            className='w-full aspect-video bg-neutral-100 overflow-hidden rounded-lg shadow-sm'
+            className='z-10 w-full aspect-video bg-neutral-100 overflow-hidden rounded-lg shadow-sm'
             style={{ height: '400px' }}
           ></div>
         </div>
         <div className='flex flex-row gap-4 pb-4'>
-          {hotels.map((hotel) => (
-            <HotelCard
-              key={hotel.id}
-              {...hotel}
-              onClick={() => navigate(`/hotels/${hotel.id}`)}
-            />
-          ))}
+          {hotels.map((hotel) => {
+            console.log(hotel);
+            return (
+              <HotelCard
+                key={hotel._id}
+                title={hotel.hotelName}
+                location={hotel.state}
+                rating={hotel.rating}
+                id={hotel._id}
+                image={
+                  'http://localhost:3000/api/v1/images/' + hotel._id + '.jpg'
+                }
+                onClick={() => navigate(`/hotels/${hotel._id}`)}
+              />
+            );
+          })}
         </div>
       </div>
     </div>

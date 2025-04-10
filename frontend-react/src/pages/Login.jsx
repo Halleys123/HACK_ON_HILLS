@@ -9,6 +9,9 @@ import { Link, useNavigate } from 'react-router-dom';
 export default function Login() {
   const message = useMessage();
   const navigate = useNavigate();
+  // Parse query parameters
+  const params = new URLSearchParams(location.search);
+  const redirect = params.get('redirect');
 
   const ref = useRef(null);
 
@@ -33,6 +36,11 @@ export default function Login() {
       localStorage.setItem('token', response.data.data.token);
       localStorage.setItem('user_id', response.data.data.user.id);
 
+      console.log(redirect);
+      if (redirect) {
+        navigate(redirect, { replace: true });
+        return null; // Return null to avoid rendering anything
+      }
       navigate('/hotels');
     }
   }

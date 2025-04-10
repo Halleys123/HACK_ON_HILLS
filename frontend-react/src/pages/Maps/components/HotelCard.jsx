@@ -1,19 +1,18 @@
 import React from 'react';
 import { MapPin, Star, Heart } from 'lucide-react';
+import Button from '@/components/Button';
+import { useNavigate } from 'react-router-dom';
 
 function HotelCard({
+  id,
   image,
   title,
   location,
-  price,
-  originalPrice,
   rating,
-  reviews,
-  currency = '$',
-  period = '/night',
   onClick,
   viewMode = 'grid',
 }) {
+  const navigate = useNavigate();
   return (
     <div
       onClick={() => {
@@ -58,14 +57,14 @@ function HotelCard({
             <div className='flex items-center mt-2'>
               <Star size={16} className='text-yellow-400 mr-1' />
               <span className='text-sm font-medium'>{rating}</span>
-              <span className='text-sm text-gray-500 ml-1'>
+              {/* <span className='text-sm text-gray-500 ml-1'>
                 ({reviews} Reviews)
-              </span>
+              </span> */}
             </div>
           </div>
 
           <div className={`${viewMode === 'list' ? 'text-right' : 'mt-4'}`}>
-            <div className='flex items-center gap-2'>
+            {/* <div className='flex items-center gap-2'>
               <span className='text-xl font-bold'>
                 {currency}
                 {price}
@@ -76,9 +75,16 @@ function HotelCard({
                   {originalPrice}
                 </span>
               )}
-            </div>
-            <div className='text-gray-500 text-xs'>Includes taxes & fees</div>
-            <span className='text-gray-500 text-sm'>{period}</span>
+            </div> */}
+            {/* <div className='text-gray-500 text-xs'>Includes taxes & fees</div> */}
+            <Button
+              className={`mt-2 ${viewMode === 'list' ? 'w-full' : ''}`}
+              onClick={() => {
+                navigate(`/hotels/${id}`);
+              }}
+            >
+              View Details
+            </Button>
           </div>
         </div>
       </div>

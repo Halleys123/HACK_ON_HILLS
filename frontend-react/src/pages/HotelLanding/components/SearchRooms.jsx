@@ -1,14 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Users, ChevronDown, ChevronUp } from 'lucide-react';
 import DatePickerHotelLanding from '../../LandingPage/components/DatePickerHotelLandning';
 import landing from '@/assets/hotel.jpg';
 import { useMessage } from '@/hooks/useMessage';
+import useLoading from '@/hooks/useLoading';
+import customFetch from '@/utils/Fetch';
+import Button from '@/components/Button';
+import { useNavigate } from 'react-router-dom';
+import { useLoggedIn } from '@/hooks/useLoggedIn';
+import Loading from '@/components/Loading';
 
-export default function SearchRooms() {
+export default function SearchRooms({
+  id = null,
+  hotelName,
+  description,
+  country,
+  city,
+  address,
+}) {
   const [isGuestDropdownOpen, setIsGuestDropdownOpen] = useState(false);
   const [adults, setAdults] = useState(2);
   const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+
+  const navigate = useNavigate();
+  const { isLoggedIn, setIsLoggedIn } = useLoggedIn();
+  const [user, setUser] = useState(null);
+  const [primaryImage, setPrimaryImage] = useState(landing);
+
+  const location = window.location.pathname;
+  const hotelId = location.split('/')[2]; // Extract hotel ID from URL
+
+  const {
+    loading,
+    setLoading,
+    message: loadingMessage,
+    setMessage,
+  } = useLoading();
 
   const message = useMessage();
 
@@ -26,6 +54,50 @@ export default function SearchRooms() {
     }
   };
 
+  async function checkIsLoggedIn() {
+    const token = localStorage.getItem('token');
+    setLoading(true);
+    setMessage('Checking if you are logged in...');
+    const response = await customFetch('/user/isLoggedIn', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setLoading(false);
+    if (response.error) {
+      setIsLoggedIn(false);
+      message.warn(
+        'Not Authorized',
+        'You are not logged in, Please login to get full experience'
+      );
+    } else {
+      setIsLoggedIn(true);
+      message.success(
+        'Success',
+        `Hello ${response.data.data.user?.name}, Welcome back!`
+      );
+      setUser(response.data.data.user);
+    }
+  }
+
+  useEffect(() => {
+    if (localStorage.getItem('token') && !isLoggedIn) {
+      checkIsLoggedIn();
+    }
+  }, []);
+
+  async function getImage(hotelId) {
+    setPrimaryImage(`http://localhost:3000/api/v1/images/${hotelId}.jpg`);
+  }
+
+  useEffect(() => {
+    if (id) {
+      console.log('Hotel ID:', id);
+      getImage(id);
+    }
+  }, [id]);
+
   return (
     <div
       id='section-one'
@@ -34,9 +106,10 @@ export default function SearchRooms() {
       }}
       className='flex flex-col gap-4 overflow-hidden relative'
     >
+      <Loading visible={loading} text={loadingMessage} />
       <img
         className='w-full h-full object-cover rounded-lg'
-        src={landing}
+        src={primaryImage || landing}
         alt='Hotel Landing'
       />
       {/* Gradient overlay */}
@@ -50,36 +123,59 @@ export default function SearchRooms() {
 
       <div className='absolute top-8 left-8 right-8 flex justify-between items-center'>
         <div className='text-white text-xl font-bold'>Hotel Logo here</div>
-        {/* 
-          // todo: add user name if logged in 
-          */}
-        <div className='flex gap-4'>
-          <button className='px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition'>
-            Sign In
-          </button>
-          <button className='px-4 py-2 bg-white rounded-full text-gray-800 hover:bg-gray-100 transition'>
-            Register
-          </button>
-        </div>
+        {!isLoggedIn ? (
+          <div className='flex gap-4'>
+            <button
+              onClick={() => {
+                navigate(`/login?redirect=/hotels/${hotelId}`);
+              }}
+              className='px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition'
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => {
+                navigate('/signup');
+              }}
+              className='px-4 py-2 bg-white rounded-full text-gray-800 hover:bg-gray-100 transition'
+            >
+              Register
+            </button>
+          </div>
+        ) : (
+          <div className='flex flex-row items-center gap-3'>
+            <span className='text-white text-sm font-medium'>
+              Hello, {user?.name}
+            </span>
+            <button
+              onClick={() => {
+                localStorage.removeItem('token');
+                localStorage.removeItem('user_id');
+                setIsLoggedIn(false);
+                message.message('Success', 'Logged out successfully!');
+              }}
+              className='px-4 py-2 bg-white rounded-full text-gray-800 hover:bg-gray-100 transition'
+            >
+              Logout
+            </button>
+          </div>
+        )}
       </div>
 
       <div className='absolute left-8 bottom-64 max-w-2xl'>
         <h1 className='font-mont text-5xl text-white font-bold mb-4'>
-          This is Hotel Name fetched from API
+          {hotelName}
         </h1>
-        <p className='text-white/90 text-xl mb-6'>
-          Experience luxury and comfort in the heart of the city. Book your stay
-          now and enjoy exclusive amenities.
-        </p>
+        <p className='text-white/90 text-xl mb-6'>{description}</p>
         <div className='flex gap-4'>
           <span className='px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm'>
-            5-Star Rating
+            {country}
           </span>
           <span className='px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm'>
-            City Center
+            {city}
           </span>
           <span className='px-3 py-1 bg-white/20 backdrop-blur-sm rounded-full text-white text-sm'>
-            Free Wifi
+            {address}
           </span>
         </div>
       </div>
@@ -99,7 +195,7 @@ export default function SearchRooms() {
             Check Out
           </span>
           <div className='bg-white/90 rounded-lg '>
-            <DatePickerHotelLanding />
+            <DatePickerHotelLanding className='!max-w-none !w-full' />
           </div>
         </div>
 
