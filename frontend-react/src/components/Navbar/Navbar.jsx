@@ -5,6 +5,8 @@ import React, { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import Button from '../Button';
 import UserDropdown from './UserDropdown';
+import Loading from '../Loading';
+import useLoading from '@/hooks/useLoading';
 
 const links = [
   { name: 'Home', path: '/' },
@@ -15,17 +17,27 @@ const links = [
 export default function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+
+  const {
+    setLoading,
+    setMessage,
+    loading,
+    message: loadingMessage,
+  } = useLoading();
   const message = useMessage();
 
   useEffect(() => {
     async function checkIsLoggedIn() {
       const token = localStorage.getItem('token');
+      setLoading(true);
+      setMessage('Checking if you are logged in...');
       const response = await customFetch('/user/isLoggedIn', {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
+      setLoading(false);
       if (response.error) {
         setIsLoggedIn(false);
         message.messaage(
@@ -45,10 +57,11 @@ export default function Navbar() {
     if (localStorage.getItem('token') && !isLoggedIn) {
       checkIsLoggedIn();
     }
-  }, [isLoggedIn, message]);
+  }, []);
 
   return (
     <div className='flex flex-row justify-between items-center bg-white shadow-md px-4 py-2 w-full fixed top-0 left-0 z-10'>
+      <Loading visible={loading} text={loadingMessage} />
       <Logo />
       <div className='flex flex-row gap-3'>
         {links.map((link) => (
@@ -65,7 +78,9 @@ export default function Navbar() {
           </NavLink>
         ))}
       </div>
-      {!isLoggedIn ? (
+      {loading ? (
+        <div className='h-14 w-54 rounded-md ghost'></div>
+      ) : !isLoggedIn ? (
         <div className='flex flex-row gap-3 items-center'>
           <Link
             to='/login'

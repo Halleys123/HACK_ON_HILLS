@@ -26,7 +26,7 @@ export default function Loading({ visible = true, text = '' }) {
           : 'loadOutgoing 0.5s ease-in-out',
         animationFillMode: 'forwards',
       }}
-      className='absolute z-40 top-4 left-1/2 -translate-x-1/2 flex flex-row items-center justify-center gap-4 bg-white rounded-md w-fit px-6 py-2'
+      className='absolute z-40 top-4 left-1/2 -translate-x-1/2 flex flex-row items-center justify-center gap-4 bg-white rounded-md w-fit px-6 py-2 shadow-md'
     >
       <LoaderCircle size={16} className='loader' />
       <span className='font-redhat text-md'>{text}</span>

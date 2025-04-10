@@ -1,6 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom'; // Assuming you're using React Router
-import { FiSettings, FiLogOut, FiUser, FiChevronDown } from 'react-icons/fi'; // Using React Icons
+import {
+  FiSettings,
+  FiLogOut,
+  FiUser,
+  FiChevronDown,
+  FiHome,
+} from 'react-icons/fi'; // Using React Icons
 
 const UserDropdown = ({ user, setIsLoggedIn, message }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +56,7 @@ const UserDropdown = ({ user, setIsLoggedIn, message }) => {
 
       {/* Dropdown Menu */}
       {isOpen && (
-        <div className='absolute right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-100 overflow-hidden z-50'>
+        <div className='absolute z-50 right-0 mt-2 w-56 rounded-xl bg-white shadow-lg border border-gray-100 overflow-hidden'>
           {/* User Info Header */}
           <div className='px-4 py-3 border-b border-gray-100'>
             <p className='text-sm font-medium text-neutral-800'>{user?.name}</p>
@@ -77,6 +83,19 @@ const UserDropdown = ({ user, setIsLoggedIn, message }) => {
               <span>Settings</span>
             </Link>
 
+            {/* Conditional Hotel Option */}
+            {user?.role === 'owner' && (
+              <Link
+                to='/dashboard'
+                className='flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50'
+                onClick={() => setIsOpen(false)}
+              >
+                <FiHome size={16} />
+                <span>Go to Hotel Page</span>
+              </Link>
+            )}
+
+            {/* Logout Option */}
             <button
               onClick={handleLogout}
               className='flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 w-full text-left'

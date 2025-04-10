@@ -9,11 +9,24 @@ import {
   Filter,
   MoreVertical,
 } from 'lucide-react';
+import customFetch from '@/utils/Fetch';
+import useLoading from '@/hooks/useLoading';
+import { useMessage } from '@/hooks/useMessage';
 
 export default function HotelStaffDashboard() {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentDate, setCurrentDate] = useState('');
+
+  const message = useMessage();
+  const {
+    loading,
+    setLoading,
+    message: loadingMessage,
+    setMessage,
+  } = useLoading(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
 
   // Mock data for reservations
   const [reservations, setReservations] = useState([
@@ -63,6 +76,35 @@ export default function HotelStaffDashboard() {
     },
   ]);
 
+  async function checkIsLoggedIn() {
+    const token = localStorage.getItem('token');
+    setLoading(true);
+    setMessage('Checking if you are logged in...');
+    const response = await customFetch('/user/isLoggedIn', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    setLoading(false);
+    if (response.error) {
+      setIsLoggedIn(false);
+      message.messaage(
+        'Not Authorized',
+        'You are not logged in, Please login to get full experience'
+      );
+    } else {
+      setIsLoggedIn(true);
+      message.success(
+        'Success',
+        `Hello ${response.data.data.user.name}, Welcome back!`
+      );
+      setUser(response.data.data.user);
+    }
+
+    console.log(user);
+  }
+
   useEffect(() => {
     // Set current date in a readable format
     const date = new Date();
@@ -75,7 +117,9 @@ export default function HotelStaffDashboard() {
       })
     );
   }, []);
-
+  useEffect(() => {
+    if (!isLoggedIn) checkIsLoggedIn();
+  }, [isLoggedIn]);
   const handleCheckIn = (id) => {
     setReservations(
       reservations.map((reservation) =>
@@ -124,15 +168,16 @@ export default function HotelStaffDashboard() {
           </h1>
           <div className='flex items-center space-x-4'>
             <div className='text-sm text-gray-500'>{currentDate}</div>
-            <button className='p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200'>
+            {/*<button className='p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200'>
               <Bell size={20} />
             </button>
+            */}
             <div className='flex items-center'>
               <div className='w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white'>
                 <User size={18} />
               </div>
               <span className='ml-2 text-sm font-medium text-gray-700'>
-                Staff
+                {user ? user.name : 'Guest'}
               </span>
             </div>
           </div>
