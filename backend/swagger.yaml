@@ -58,6 +58,19 @@ paths:
           description: User logged in successfully
         '401':
           description: Invalid credentials
+  /user/isLoggedIn:
+    get:
+      tags:
+        - User
+      summary: Check if user is logged in
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: User is logged in
+        '401':
+          description: User is not logged in
+
   /hotel:
     get:
       tags:
