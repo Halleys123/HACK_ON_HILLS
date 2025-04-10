@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 
 import RoomCard from './RoomCard';
-import PaymentOverlay from '@/components/PaymentOverlay';
+import PaymentOverlay from '@/components/PaymentOverlay/PaymentOverlay';
+import useBookRoom from '@/hooks/useBookRoom';
 
 const RoomsSection = ({ rooms }) => {
-  // const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const { rooms: bookedRooms } = useBookRoom();
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
   // const [selectedRoom, setSelectedRoom] = useState(null);
 
   console.log(rooms);
@@ -21,9 +23,19 @@ const RoomsSection = ({ rooms }) => {
           <RoomCard key={room._id} room={room} />
         ))}
       </div>
-      <button className='mr-8 self-end px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'>
+      <button
+        onClick={() => {
+          setIsPaymentOpen(true);
+        }}
+        className='mr-8 mt-8 self-end px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition'
+      >
         Complete Booking
       </button>
+      <PaymentOverlay
+        isOpen={isPaymentOpen}
+        onClose={() => setIsPaymentOpen(false)}
+        roomDetails={bookedRooms} // Pass the first room as an example
+      />
     </div>
   );
 };

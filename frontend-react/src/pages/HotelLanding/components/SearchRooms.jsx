@@ -9,6 +9,7 @@ import Button from '@/components/Button';
 import { useNavigate } from 'react-router-dom';
 import { useLoggedIn } from '@/hooks/useLoggedIn';
 import Loading from '@/components/Loading';
+import useBookRoom from '@/hooks/useBookRoom';
 
 export default function SearchRooms({
   id = null,
@@ -19,9 +20,18 @@ export default function SearchRooms({
   address,
 }) {
   const [isGuestDropdownOpen, setIsGuestDropdownOpen] = useState(false);
-  const [adults, setAdults] = useState(2);
-  const [children, setChildren] = useState(0);
   const [rooms, setRooms] = useState(1);
+
+  const {
+    adults,
+    childrenCount: children,
+    setAdultsCount: setAdults,
+    setChildrenCount: setChildren,
+    checkInDate,
+    setCheckIn,
+    checkOutDate,
+    setCheckOut,
+  } = useBookRoom();
 
   const navigate = useNavigate();
   const { isLoggedIn, setIsLoggedIn } = useLoggedIn();
@@ -186,7 +196,11 @@ export default function SearchRooms({
             Check In
           </span>
           <div className='bg-white/90 rounded-lg'>
-            <DatePickerHotelLanding className='!max-w-none !w-full' />
+            <DatePickerHotelLanding
+              selectedDate={checkInDate}
+              setSelectedDate={setCheckIn}
+              className='!max-w-none !w-full'
+            />
           </div>
         </div>
 
@@ -195,7 +209,11 @@ export default function SearchRooms({
             Check Out
           </span>
           <div className='bg-white/90 rounded-lg '>
-            <DatePickerHotelLanding className='!max-w-none !w-full' />
+            <DatePickerHotelLanding
+              selectedDate={checkOutDate}
+              setSelectedDate={setCheckOut}
+              className='!max-w-none !w-full'
+            />
           </div>
         </div>
 

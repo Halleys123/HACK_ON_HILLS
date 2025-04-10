@@ -5,6 +5,7 @@ const sendResponse = require('../../utils/sendResponse');
 const getRooms = catchAsync(async (req, res, next) => {
   let {
     hotelId,
+    roomId,
     roomNumber,
     type,
     minPrice,
@@ -18,11 +19,13 @@ const getRooms = catchAsync(async (req, res, next) => {
 
   hotelId = hotelId ? hotelId.split(',') : hotelId;
   roomNumber = roomNumber ? roomNumber.split(',') : roomNumber;
+  roomId = roomId ? roomId.split(',') : roomId;
   type = type ? type.split(',') : type;
 
   const query = {};
 
   // Apply filters only if query parameters are provided
+  if (roomId) query._id = { $in: Array.isArray(roomId) ? roomId : [roomId] };
   if (hotelId)
     query.hotelId = { $in: Array.isArray(hotelId) ? hotelId : [hotelId] };
   if (roomNumber)

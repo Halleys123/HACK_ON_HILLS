@@ -5,9 +5,12 @@ import {
   ChevronRight,
 } from 'lucide-react';
 
-const DatePickerHotelLanding = ({ className }) => {
+const DatePickerHotelLanding = ({
+  className,
+  selectedDate,
+  setSelectedDate,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedDate, setSelectedDate] = useState(null);
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // Get current date information
