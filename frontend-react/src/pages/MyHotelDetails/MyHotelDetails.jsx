@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import {
   FaStar,
@@ -15,6 +15,7 @@ import useLoading from '@/hooks/useLoading';
 import { useMessage } from '@/hooks/useMessage';
 import Overlay from '@/components/Overlay';
 import AddNewRoomForm from './components/AddNewRoomForm';
+import { FaImage } from 'react-icons/fa6';
 
 // Mock data - replace with actual API call
 async function fetchHotelDetails(id, message) {
@@ -107,9 +108,35 @@ export default function MyHotelDetails() {
   const [hotel, setHotel] = useState(null);
   const [rooms, setRooms] = useState([]);
   const [addNewRoom, setAddNewRoom] = useState(false);
+  const ref = useRef(null);
 
   const { loading, setLoading } = useLoading();
   const message = useMessage();
+
+  async function submitImage(roomId) {
+    const formData = new FormData(ref.current);
+    try {
+      let response = await fetch(
+        `http://localhost:3000/api/v1/room/upload-image?roomId=${roomId}&hotelId=${hotelId}`,
+        {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+          body: formData,
+        }
+      );
+      response = await response.json();
+      if (response.success) {
+        message.success('Success', response.message);
+      } else {
+        message.error('Error', response.message || 'Something went wrong');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      alert('An error occurred while uploading the image.');
+    }
+  }
 
   useEffect(() => {
     const getHotelData = async () => {
@@ -320,7 +347,10 @@ export default function MyHotelDetails() {
                   <div className='h-48 bg-gray-200'>
                     {room.images ? (
                       <img
-                        src={room.images[0]}
+                        src={
+                          'http://localhost:3000/api/v1/images/' +
+                          room.images[0]
+                        }
                         alt={room.title}
                         className='w-full h-full object-cover'
                       />
@@ -361,6 +391,26 @@ export default function MyHotelDetails() {
                     </div>
 
                     <div className='flex justify-between'>
+                      <form
+                        ref={ref}
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          submitImage(room._id);
+                        }}
+                      >
+                        <input
+                          type='file'
+                          name='image'
+                          accept='image/*'
+                          className='p-1 max-w-20 text-xs text-purple-600 hover:bg-purple-50 rounded'
+                        />
+                        <button
+                          type='submit'
+                          className='p-1 text-purple-600 hover:bg-purple-50 rounded'
+                        >
+                          <FaImage size={14} />
+                        </button>
+                      </form>
                       <button className='px-3 py-1 border border-blue-600 text-blue-600 rounded hover:bg-blue-50 text-sm'>
                         Edit
                       </button>

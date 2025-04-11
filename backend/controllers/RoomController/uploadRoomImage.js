@@ -3,14 +3,29 @@ const path = require('path');
 const RoomSchema = require('../../schemas/RoomSchema');
 const catchAsync = require('../../utils/catchAsync');
 const sendResponse = require('../../utils/sendResponse');
+const HotelSchema = require('../../schemas/HotelSchema');
 
 const uploadRoomImage = catchAsync(async (req, res) => {
-  const { roomId } = req.query;
+  const { roomId, hotelId } = req.query;
   const user = req.user;
+
+  const hotel = await HotelSchema.findOne({
+    _id: hotelId,
+    ownerId: user._id,
+  });
+  if (!hotel) {
+    return sendResponse(
+      res,
+      403,
+      false,
+      "Not authorized to upload images to someone else's hotel",
+      {}
+    );
+  }
 
   const room = await RoomSchema.findOne({
     _id: roomId,
-    hotelId: user.hotelId,
+    hotelId: hotel._id,
   });
   if (!room) {
     return sendResponse(
@@ -47,7 +62,7 @@ const uploadRoomImage = catchAsync(async (req, res) => {
   if (!room.images) {
     room.images = []; // Initialize images array if it doesn't exist
   }
-  if (!room.images.contains(fileName)) {
+  if (!room.images.includes(fileName)) {
     room.images.push(fileName); // Add the new image to the array
   }
 
