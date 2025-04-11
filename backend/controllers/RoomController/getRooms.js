@@ -12,7 +12,7 @@ const getRooms = catchAsync(async (req, res, next) => {
     maxPrice,
     minCapacity,
     maxCapacity,
-    isAvailable = 'undefined',
+    isAvailable = '',
     page = 1,
     limit = 10,
   } = req.query;

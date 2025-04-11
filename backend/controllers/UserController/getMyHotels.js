@@ -4,12 +4,13 @@ const sendResponse = require('../../utils/sendResponse');
 
 const getMyHotels = catchAsync(async (req, res) => {
   const { user } = req;
-  const { page = 1, limit = 10, select = 'hotelName id' } = req.query; // Extract pagination parameters
+  const { page = 1, limit = 10, select = 'hotelName,id' } = req.query; // Extract pagination parameters
 
   console.log(`User ID: ${user.id}`);
+  const sel = select.split(',').join(' '); // Convert select string to space-separated string for Mongoose
   // Fetch hotels owned by the user with pagination
   const hotels = await HotelSchema.find({ ownerId: user.id })
-    .select(select) // Select only hotelName and id
+    .select(sel) // Select only hotelName and id
     .skip((page - 1) * limit) // Skip documents for pagination
     .limit(parseInt(limit)); // Limit the number of documents returned
   if (!hotels || hotels.length === 0) {
