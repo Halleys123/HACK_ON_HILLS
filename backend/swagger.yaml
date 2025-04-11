@@ -209,6 +209,11 @@ paths:
           required: true
           schema:
             type: string
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         '200':
           description: Hotel deleted successfully
@@ -222,6 +227,11 @@ paths:
       parameters:
         - name: hotelId
           in: path
+          required: true
+          schema:
+            type: string
+        - name: Authorization
+          in: header
           required: true
           schema:
             type: string
@@ -531,3 +541,11 @@ paths:
           description: Payment successful
         '400':
           description: Payment failed
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+security:
+  - BearerAuth: []
