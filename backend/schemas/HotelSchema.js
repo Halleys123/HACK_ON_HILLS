@@ -41,6 +41,7 @@ const HotelSchema = mongoose.Schema(
     coordinates: {
       type: [Number], // [longitude, latitude]
       index: '2dsphere',
+      required: true,
     },
     primaryImage: {
       type: String,

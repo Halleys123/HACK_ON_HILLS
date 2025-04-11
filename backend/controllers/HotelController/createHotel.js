@@ -4,8 +4,16 @@ const sendResponse = require('../../utils/sendResponse');
 
 const createHotel = catchAsync(async (req, res) => {
   const { id: ownerId } = req.user;
-  const { hotelName, description, address, state, city, country, zipCode } =
-    req.body;
+  const {
+    hotelName,
+    description,
+    address,
+    state,
+    city,
+    country,
+    zipCode,
+    coordinates,
+  } = req.body;
 
   const newHotel = new HotelSchema({
     ownerId,
@@ -16,6 +24,7 @@ const createHotel = catchAsync(async (req, res) => {
     city,
     country,
     zipCode,
+    coordinates,
   });
 
   const hotelSave = await newHotel.save();
