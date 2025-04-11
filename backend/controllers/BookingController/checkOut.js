@@ -56,6 +56,7 @@ const checkOut = catchAsync(async (req, res, next) => {
   // Update the booking status to checkedOut
   await BookingSchema.findByIdAndUpdate(bookingId, {
     actualCheckOut: new Date(),
+    checkInStatus: 'checked-out',
   });
   await RoomSchema.findByIdAndUpdate(booking.roomId, {
     isAvailable: true,

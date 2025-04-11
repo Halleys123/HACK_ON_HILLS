@@ -5,6 +5,7 @@ export default function BookRoomProvider({ children }) {
   const [adults, setAdults] = useState(0);
   const [childrenCount, setChildren] = useState(0);
   const [rooms, setRooms] = useState([]);
+  const [hotel, setHotel] = useState(null);
 
   const [checkInDate, setCheckInDate] = useState(null);
   const [checkOutDate, setCheckOutDate] = useState(null);
@@ -53,6 +54,8 @@ export default function BookRoomProvider({ children }) {
         checkOutDate,
         rooms,
         totalPrice,
+        hotel,
+        setHotel,
       }}
     >
       {children}

@@ -59,6 +59,7 @@ const checkIn = catchAsync(async (req, res, next) => {
   // Update the booking status to checkedIn
   await BookingSchema.findByIdAndUpdate(bookingId, {
     actualCheckIn: new Date(),
+    checkInStatus: 'checked-in',
   });
 
   sendResponse(res, 200, true, 'Guest checked in successfully', {

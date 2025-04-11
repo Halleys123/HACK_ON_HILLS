@@ -19,7 +19,7 @@ export default function Hero() {
       <div className='absolute top-1/2 left-12 transform -translate-y-1/2 text-white z-20'>
         <div className='flex flex-col gap-2 w-fit px-12 py-4 rounded-2xl outline outline-neutral-400 backdrop-blur-md'>
           <h1 className='text-5xl font-bold text-white'>
-            Welcome to Himachal Preadesh
+            Welcome to Himachal Pradesh
           </h1>
           <p className='text-xl mt-2'>
             The land of gods, temples, and mountains

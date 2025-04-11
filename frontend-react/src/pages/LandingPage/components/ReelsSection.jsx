@@ -2,6 +2,12 @@ import React from 'react';
 import HimachalReelCard from './HimachalReelCard';
 
 import manali from '@/assets/manali.jpg';
+import a from '@assets/a (1).jpg';
+import b from '@assets/a (2).jpg';
+import f from '@assets/a (3).jpg';
+import c from '@assets/a (4).jpg';
+import d from '@assets/a (5).jpg';
+import e from '@assets/b (1).jpg';
 
 const reels = [
   {
@@ -10,24 +16,34 @@ const reels = [
     thumbnail: manali,
   },
   {
-    title: 'Spiti Valley',
-    description: 'Moon-like landscapes & desert beauty 🌄',
-    thumbnail: '/reels/spiti.jpg',
+    title: 'Khajiar',
+    description: 'Moon-like landscapes 🌄',
+    thumbnail: c,
   },
   {
     title: 'Shimla Streets',
     description: 'Evenings filled with charm 🏙️',
-    thumbnail: '/reels/shimla.jpg',
+    thumbnail: b,
+  },
+  // {
+  //   title: 'Dalhousie Views',
+  //   description: 'Hazy hills and clear skies 🌤️',
+  //   thumbnail: a,
+  // },
+  {
+    title: 'Bir Billing',
+    description: 'Paragliding in Bir',
+    thumbnail: a,
   },
   {
-    title: 'Dalhousie Views',
-    description: 'Hazy hills and clear skies 🌤️',
-    thumbnail: '/reels/dalhousie.jpg',
+    title: 'Spiti Valley',
+    description: 'The desert mountains of Spiti',
+    thumbnail: d,
   },
   {
-    title: 'Kasol Vibes',
-    description: 'Chill scenes by the Parvati River 🌊',
-    thumbnail: '/reels/kasol.jpg',
+    title: 'Dharamshala',
+    description: 'Tibetan culture and monasteries 🕉️',
+    thumbnail: e,
   },
 ];
 

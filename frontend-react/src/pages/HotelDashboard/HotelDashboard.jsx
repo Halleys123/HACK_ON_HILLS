@@ -1,25 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Search,
-  Calendar,
-  LogIn,
-  LogOut,
-  User,
-  Bell,
-  Filter,
-  MoreVertical,
-  Loader,
-  RefreshCcw,
-} from 'lucide-react';
+import Header from './components/Header';
+import ReservationsTable from './components/ReservationsTable';
+import SearchAndFilters from './components/SearchAndFilters';
+import Pagination from '@/components/Pagination';
 import customFetch from '@/utils/Fetch';
 import useLoading from '@/hooks/useLoading';
 import { useMessage } from '@/hooks/useMessage';
 import { useLoggedIn } from '@/hooks/useLoggedIn';
+import Loading from '@/components/Loading';
 
 export default function HotelStaffDashboard() {
   const [activeTab, setActiveTab] = useState('upcoming');
   const [searchQuery, setSearchQuery] = useState('');
   const [currentDate, setCurrentDate] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(5);
 
   const message = useMessage();
   const {
@@ -31,53 +26,50 @@ export default function HotelStaffDashboard() {
   const { isLoggedIn, setIsLoggedIn } = useLoggedIn();
   const [user, setUser] = useState(null);
 
-  // Mock data for reservations
-  const [reservations, setReservations] = useState([
+  const [reservations, setReservations] = useState([]);
+  const [myHotels, setMyHotels] = useState([
     {
-      id: 1,
-      guestName: 'John Smith',
-      roomNumber: '301',
-      checkInDate: '2025-04-10',
-      checkOutDate: '2025-04-15',
-      checkInStatus: 'upcoming',
-      status: 'paid',
-      guests: 2,
-      specialRequests: 'High floor, away from elevator',
-    },
-    {
-      id: 2,
-      guestName: 'Emma Johnson',
-      roomNumber: '204',
-      checkInDate: '2025-04-09',
-      checkOutDate: '2025-04-12',
-      checkInStatus: 'checked-in',
-      status: 'paid',
-      guests: 1,
-      specialRequests: 'Extra pillows',
-    },
-    {
-      id: 3,
-      guestName: 'Michael Chen',
-      roomNumber: '512',
-      checkInDate: '2025-04-08',
-      checkOutDate: '2025-04-10',
-      checkInStatus: 'checked-in',
-      status: 'paid',
-      guests: 3,
-      specialRequests: '',
-    },
-    {
-      id: 4,
-      guestName: 'Sarah Williams',
-      roomNumber: '105',
-      checkInDate: '2025-04-05',
-      checkOutDate: '2025-04-10',
-      checkInStatus: 'checked-in',
-      status: 'paid',
-      guests: 2,
-      specialRequests: 'Quiet room',
+      value: '',
+      label: 'All Hotels',
     },
   ]);
+  const [selectedHotel, setSelectedHotel] = useState('');
+
+  async function getMyHotels() {
+    setLoading(true);
+    const response = await customFetch('/user/getMyHotels', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+      },
+    });
+    setLoading(false);
+    if (response.error) {
+      message.error('Error', response.data.message || 'Something went wrong');
+    } else {
+      message.success('Success', response.data.message);
+      const tempHotels = [
+        {
+          value: '',
+          label: 'All Hotels',
+        },
+      ];
+      for (const hotel of response.data.data.hotels) {
+        tempHotels.push({
+          value: hotel._id,
+          label: hotel.hotelName,
+        });
+      }
+      setMyHotels(tempHotels);
+      if (response.data.data.hotels.length === 0) {
+        message.warn(
+          'No Hotels Found',
+          'You have not added any hotels yet, Please add a hotel to get started'
+        );
+      }
+      console.log(response.data.data.hotels);
+    }
+  }
 
   async function checkIsLoggedIn() {
     const token = localStorage.getItem('token');
@@ -92,20 +84,63 @@ export default function HotelStaffDashboard() {
     setLoading(false);
     if (response.error) {
       setIsLoggedIn(false);
-      message.messaage(
+      message.message(
         'Not Authorized',
         'You are not logged in, Please login to get full experience'
       );
+      setTimeout(() => {
+        window.location.href = '/login';
+      }, 2000);
     } else {
       setIsLoggedIn(true);
       message.success(
         'Success',
         `Hello ${response.data.data.user.name}, Welcome back!`
       );
+      if (response.data.data.user.role !== 'owner') {
+        message.warn(
+          'Not Authorized',
+          'You are not authorized to access this page'
+        );
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      }
       setUser(response.data.data.user);
     }
 
     console.log(user);
+  }
+
+  // todo modify this code as backend can handle multiple hotelId
+  async function getReservations(page = 1, hotelId = '') {
+    setLoading(true);
+    const response = await customFetch(
+      `/booking/reservations?hotelIds=${hotelId}&page=${page}&checkInStatus=${activeTab}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      }
+    );
+    setLoading(false);
+    if (response.error) {
+      message.message('Info', response.data.message || 'Something went wrong');
+      setReservations([]);
+    } else {
+      console.log(response.data);
+      message.success('Success', response.data.message);
+      setReservations(response.data.data.bookings);
+      setTotalPages(response.data.data.pagination.limit / 10 || 1);
+    }
+  }
+
+  async function reload() {
+    setLoading(true);
+    await getMyHotels();
+    await getReservations(currentPage, selectedHotel.value);
+    setLoading(false);
   }
 
   useEffect(() => {
@@ -113,7 +148,14 @@ export default function HotelStaffDashboard() {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    // Set current date in a readable format
+    getMyHotels();
+  }, []);
+
+  useEffect(() => {
+    getReservations(currentPage, selectedHotel.value);
+  }, [selectedHotel, activeTab]);
+
+  useEffect(() => {
     const date = new Date();
     setCurrentDate(
       date.toLocaleDateString('en-US', {
@@ -125,102 +167,21 @@ export default function HotelStaffDashboard() {
     );
   }, []);
 
-  const handleCheckIn = (id) => {
-    setReservations(
-      reservations.map((reservation) =>
-        reservation.id === id
-          ? { ...reservation, status: 'checked-in' }
-          : reservation
-      )
-    );
-  };
+  const handleCheckIn = (id) => {};
 
-  const handleCheckOut = (id) => {
-    setReservations(
-      reservations.map((reservation) =>
-        reservation.id === id
-          ? { ...reservation, status: 'checked-out' }
-          : reservation
-      )
-    );
-  };
-
-  const filteredReservations = reservations.filter((reservation) => {
-    // Filter by active tab
-    if (activeTab !== 'all' && reservation.status !== activeTab) {
-      return false;
-    }
-
-    // Filter by search query
-    if (searchQuery) {
-      const query = searchQuery.toLowerCase();
-      return (
-        reservation.guestName.toLowerCase().includes(query) ||
-        reservation.roomNumber.includes(query)
-      );
-    }
-
-    return true;
-  });
+  const handleCheckOut = (id) => {};
 
   return (
     <div className='min-h-screen bg-gray-50'>
-      {/* Header */}
-      <header className='bg-white shadow-sm'>
-        <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center'>
-          <h1 className='text-xl font-semibold text-gray-900'>
-            Hotel Staff Dashboard
-          </h1>
-          <div className='flex items-center space-x-4'>
-            <div className='text-sm text-gray-500'>{currentDate}</div>
-            {/*<button className='p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200'>
-              <Bell size={20} />
-            </button>
-            */}
-            <div className='flex items-center'>
-              <div className='w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white'>
-                <User size={18} />
-              </div>
-              <span className='ml-2 text-sm font-medium text-gray-700'>
-                {user ? user.name : 'Guest'}
-              </span>
-            </div>
-          </div>
-        </div>
-      </header>
-
+      <Loading visible={loading} text={loadingMessage} />
+      <Header currentDate={currentDate} user={user} />
       <main className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6'>
-        {/* Search and filters */}
-        <div className='flex flex-col md:flex-row md:items-center justify-between mb-6 gap-4'>
-          <div className='relative flex-1 max-w-md'>
-            <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none'>
-              <Search size={18} className='text-gray-400' />
-            </div>
-            <input
-              type='text'
-              className='block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm'
-              placeholder='Search by guest name or room number'
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </div>
-
-          <div className='flex space-x-2'>
-            <button className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
-              <Filter size={16} className='mr-2' />
-              Filters
-            </button>
-            <button className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
-              <Calendar size={16} className='mr-2' />
-              Today
-            </button>
-            <button className='inline-flex items-center px-3 py-2 border border-gray-300 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'>
-              <RefreshCcw size={16} className='mr-2' />
-            </button>
-          </div>
-        </div>
-
-        {/* Tabs */}
+        <SearchAndFilters
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          hotelsList={myHotels}
+          setSelectedHotel={setSelectedHotel}
+        />
         <div className='border-b border-gray-200 mb-6'>
           <nav className='-mb-px flex space-x-8'>
             <button
@@ -265,138 +226,17 @@ export default function HotelStaffDashboard() {
             </button>
           </nav>
         </div>
-
-        {/* Reservations Table */}
-        <div className='bg-white shadow overflow-hidden sm:rounded-lg'>
-          <table className='min-w-full divide-y divide-gray-200'>
-            <thead className='bg-gray-50'>
-              <tr>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
-                >
-                  Guest
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
-                >
-                  Room
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
-                >
-                  Check-in Date
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
-                >
-                  Check-out Date
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider'
-                >
-                  Status
-                </th>
-                <th
-                  scope='col'
-                  className='px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider'
-                >
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className='bg-white divide-y divide-gray-200'>
-              {filteredReservations.map((reservation) => (
-                <tr key={reservation.id}>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    <div className='flex items-center'>
-                      <div className='flex-shrink-0 h-10 w-10 rounded-full bg-gray-200 flex items-center justify-center'>
-                        <User size={20} className='text-gray-500' />
-                      </div>
-                      <div className='ml-4'>
-                        <div className='text-sm font-medium text-gray-900'>
-                          {reservation.guestName}
-                        </div>
-                        <div className='text-sm text-gray-500'>
-                          {reservation.guests} guest(s)
-                        </div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    <div className='text-sm text-gray-900'>
-                      Room {reservation.roomNumber}
-                    </div>
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    <div className='text-sm text-gray-900'>
-                      {new Date(reservation.checkInDate).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    <div className='text-sm text-gray-900'>
-                      {new Date(reservation.checkOutDate).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap'>
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        reservation.status === 'upcoming'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : reservation.status === 'checked-in'
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {reservation.status === 'upcoming'
-                        ? 'Upcoming'
-                        : reservation.status === 'checked-in'
-                        ? 'Checked In'
-                        : 'Checked Out'}
-                    </span>
-                  </td>
-                  <td className='px-6 py-4 whitespace-nowrap text-right text-sm font-medium'>
-                    <div className='flex justify-end space-x-2'>
-                      {reservation.status === 'upcoming' && (
-                        <button
-                          onClick={() => handleCheckIn(reservation.id)}
-                          className='inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500'
-                        >
-                          <LogIn size={14} className='mr-1' /> Check In
-                        </button>
-                      )}
-                      {reservation.status === 'checked-in' && (
-                        <button
-                          onClick={() => handleCheckOut(reservation.id)}
-                          className='inline-flex items-center px-3 py-1 border border-transparent text-xs font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
-                        >
-                          <LogOut size={14} className='mr-1' /> Check Out
-                        </button>
-                      )}
-                      <button className='text-gray-400 hover:text-gray-500'>
-                        <MoreVertical size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {filteredReservations.length === 0 && (
-                <tr>
-                  <td
-                    colSpan='6'
-                    className='px-6 py-10 text-center text-sm text-gray-500'
-                  >
-                    No reservations found
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+        <ReservationsTable
+          filteredReservations={reservations}
+          handleCheckIn={handleCheckIn}
+          handleCheckOut={handleCheckOut}
+          reload={reload}
+        />
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+        />
       </main>
     </div>
   );

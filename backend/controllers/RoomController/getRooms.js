@@ -12,7 +12,7 @@ const getRooms = catchAsync(async (req, res, next) => {
     maxPrice,
     minCapacity,
     maxCapacity,
-    isAvailable,
+    isAvailable = 'undefined',
     page = 1,
     limit = 10,
   } = req.query;
@@ -43,7 +43,7 @@ const getRooms = catchAsync(async (req, res, next) => {
     if (minCapacity) query.capacity.$gte = Number(minCapacity);
     if (maxCapacity) query.capacity.$lte = Number(maxCapacity);
   }
-  if (isAvailable !== undefined) query.isAvailable = isAvailable === 'true';
+  if (isAvailable !== '') query.isAvailable = isAvailable === 'true';
 
   // Pagination
   const skip = (page - 1) * limit;

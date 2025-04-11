@@ -5,6 +5,7 @@ import customFetch from '@/utils/Fetch';
 import { useMessage } from '@/hooks/useMessage';
 import useLoading from '@/hooks/useLoading';
 import Loading from '@/components/Loading';
+import useBookRoom from '@/hooks/useBookRoom';
 
 export default function HotelLanding() {
   const path = window.location.pathname;
@@ -19,12 +20,12 @@ export default function HotelLanding() {
 
   const hotelId = path.split('/')[2];
   const [hotelDetails, setHotelDetails] = useState({});
-  const [RoomDetails, setRoomDetails] = useState([]);
+  const { setHotel } = useBookRoom();
 
   async function getHotelDetails(hotelId) {
     setLoading(true);
     setMessage('Fetching Hotel Details...');
-    const response = await customFetch('/hotel/' + hotelId, {
+    const response = await customFetch(`/hotel/${hotelId}`, {
       method: 'GET',
       headers: {
         Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -40,29 +41,10 @@ export default function HotelLanding() {
     console.log('Hotel Details', response);
   }
 
-  async function getRoomDetails(hotelId) {
-    setLoading(true);
-    setMessage('Fetching Hotel Details...');
-    const response = await customFetch('/room?hotelId=' + hotelId, {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
-      },
-    });
-    setLoading(false);
-    if (response.error) {
-      message.error('Error', response.data.message || 'Something went wrong');
-    } else {
-      message.success('Success', response.data.message);
-      setRoomDetails(response.data.data.rooms);
-    }
-    console.log(response);
-  }
-
   useEffect(() => {
     if (hotelId) {
-      getRoomDetails(hotelId);
       getHotelDetails(hotelId);
+      setHotel(hotelId);
     }
   }, []);
 
@@ -70,7 +52,7 @@ export default function HotelLanding() {
     <div className='flex flex-col p-2 gap-6'>
       <Loading visible={loading} text={loaderMessage} />
       <SearchRooms {...hotelDetails} id={hotelDetails._id} />
-      <RoomsSection rooms={RoomDetails} />
+      <RoomsSection hotelId={hotelId} />
     </div>
   );
 }

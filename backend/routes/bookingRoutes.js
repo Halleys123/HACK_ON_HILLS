@@ -4,10 +4,14 @@ const authorize = require('../middlewares/authorize');
 const {
   createBooking,
 } = require('../controllers/BookingController/createBooking');
+const {
+  getAllBookings,
+} = require('../controllers/BookingController/getAllBookings');
 const { checkIn } = require('../controllers/BookingController/checkIn');
 const { checkOut } = require('../controllers/BookingController/checkOut');
 const router = express.Router();
 
+router.get('/reservations', authenticate, authorize(['owner']), getAllBookings);
 router.post(
   '/book-room',
   authenticate,

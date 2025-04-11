@@ -5,7 +5,9 @@ import manali from '@assets/manali.jpg';
 import dharamshala from '@assets/dharamshala.jpg';
 // import kasol from '@assets/kasol.jpg';
 import shimla from '@assets/shimla.jpg';
-// import bir from '@assets/bir.jpg';
+import a from '@assets/a (1).jpg';
+import b from '@assets/a (2).jpg';
+import c from '@assets/a (3).jpg';
 
 const places = [
   {
@@ -18,7 +20,7 @@ const places = [
     name: 'Spiti Valley',
     description:
       'High-altitude desert valley with monasteries and dramatic landscapes.',
-    image: '/images/spiti.jpg',
+    image: a,
   },
   {
     name: 'Dharamshala',
@@ -29,7 +31,7 @@ const places = [
   {
     name: 'Kasol',
     description: 'The backpacker’s paradise along the Parvati River.',
-    image: 'a',
+    image: b,
   },
   {
     name: 'Shimla',
@@ -39,7 +41,7 @@ const places = [
   {
     name: 'Bir Billing',
     description: 'The paragliding capital of India with breathtaking views.',
-    image: '/images/bir.jpg',
+    image: c,
   },
 ];
 

@@ -13,10 +13,19 @@ const {
   getAllHotels,
   getHotel,
 } = require('../controllers/HotelController/getHotels');
+const {
+  addPrimaryImage,
+} = require('../controllers/HotelController/addPrimaryImage');
 
 router.get('/', getAllHotels);
 router.get('/:hotelId', getHotel); // Assuming you want to get a specific hotel by ID
 router.post('/', authenticate, authorize(['owner']), createHotel);
+router.post(
+  '/:hotelId/add-primary-image',
+  authenticate,
+  authorize(['owner']),
+  addPrimaryImage
+);
 router.delete('/:id', authenticate, authorize(['owner']), deleteAllHotel);
 router.delete('/', authenticate, authorize(['owner']), deleteHotel);
 

@@ -11,7 +11,11 @@ export default function RoomCard({ room }) {
   return (
     <div
       key={room._id}
-      className='mx-6 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow'
+      className={`mx-6 border border-gray-200 rounded-lg overflow-hidden shadow-sm hover:shadow-md transition-shadow ${
+        !room.isAvailable
+          ? 'bg-gray-200 opacity-50 pointer-events-none cursor-not-allowed'
+          : ''
+      }`}
     >
       <div className='flex flex-col md:flex-row'>
         {/* Room Image */}
@@ -19,7 +23,9 @@ export default function RoomCard({ room }) {
           <img
             src={'http://localhost:3000/api/v1/images/' + room._id + '.jpg'}
             alt={room.name}
-            className='aspect-video h-40 md:h-full object-cover'
+            className={`aspect-video h-40 md:h-full object-cover ${
+              !room.isAvailable ? 'grayscale' : ''
+            }`}
           />
           <button className='absolute top-4 right-4 p-2 bg-white/80 rounded-full'>
             <Heart className='h-5 w-5 text-gray-500 hover:text-red-500' />

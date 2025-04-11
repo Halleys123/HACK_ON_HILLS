@@ -13,6 +13,9 @@ import Navbar from './components/Navbar/Navbar';
 import Footer from './components/Footer';
 import LoggedInProvider from './provider/LoggedInProvider';
 import BookRoomProvider from './provider/BookRoomProvider';
+import HotelRooms from './pages/HotelRooms';
+import MyHotels from './pages/MyHotels/MyHotels';
+import MyHotelDetails from './pages/MyHotelDetails/MyHotelDetails';
 
 function App() {
   return (
@@ -39,6 +42,12 @@ function App() {
                 <Route path='signup' element={<Signup />} />
               </Route>
               <Route path='dashboard' element={<HotelStaffDashboard />}></Route>
+              <Route path='/dashboard/rooms' element={<HotelRooms />} />
+              <Route path='/dashboard/hotels' element={<MyHotels />} />
+              <Route
+                path='/dashboard/hotels/:hotelId'
+                element={<MyHotelDetails />}
+              />
             </Routes>
           </BrowserRouter>
         </BookRoomProvider>

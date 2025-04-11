@@ -125,7 +125,7 @@ export default function Maps() {
             style={{ height: '400px' }}
           ></div>
         </div>
-        <div className='flex flex-row gap-4 pb-4'>
+        <div className='grid md:grid-cols-3 sm:grid-cols-2 grid-cols-1 gap-4 pb-4'>
           {hotels.map((hotel) => {
             console.log(hotel);
             return (
@@ -147,3 +147,8 @@ export default function Maps() {
     </div>
   );
 }
+
+// todo: chatbot
+// todo: maps
+// todo: room image add
+// todo: database structure

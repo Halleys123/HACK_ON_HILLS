@@ -20,7 +20,7 @@ function HotelCard({
       }}
       className={`${
         viewMode === 'grid'
-          ? 'max-w-xs w-full rounded-lg h-fit bg-white shadow-sm hover:shadow-md transition-shadow'
+          ? 'max-w-xs w-full flex-1 rounded-lg h-fit bg-white shadow-sm hover:shadow-md transition-shadow'
           : 'w-full rounded-lg h-fit bg-white shadow-sm hover:shadow-md transition-shadow flex'
       } cursor-pointer`}
     >
