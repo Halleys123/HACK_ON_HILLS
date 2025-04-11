@@ -16,6 +16,7 @@ import BookRoomProvider from './provider/BookRoomProvider';
 import HotelRooms from './pages/HotelRooms';
 import MyHotels from './pages/MyHotels/MyHotels';
 import MyHotelDetails from './pages/MyHotelDetails/MyHotelDetails';
+import NotFound from './pages/NotFound';
 
 function App() {
   return (
@@ -48,6 +49,7 @@ function App() {
                 path='/dashboard/hotels/:hotelId'
                 element={<MyHotelDetails />}
               />
+              <Route path='*' element={<NotFound />} />
             </Routes>
           </BrowserRouter>
         </BookRoomProvider>
