@@ -21,7 +21,7 @@ export default function RoomCard({ room }) {
         {/* Room Image */}
         <div className='relative w-72'>
           <img
-            src={'http://localhost:3000/api/v1/images/' + room._id + '.jpg'}
+            src={`${import.meta.env.VITE_BACKEND}/images/${room._id}.jpg`}
             alt={room.name}
             className={`aspect-video h-40 md:h-full object-cover ${
               !room.isAvailable ? 'grayscale' : ''

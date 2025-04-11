@@ -220,9 +220,9 @@ export default function Maps() {
                 location={`${hotel.city}, ${hotel.state}`}
                 rating={hotel.rating}
                 id={hotel._id}
-                image={
-                  'http://localhost:3000/api/v1/images/' + hotel._id + '.jpg'
-                }
+                image={`${import.meta.env.VITE_BACKEND}/images/${
+                  hotel._id
+                }.jpg`}
                 onClick={() => navigate(`/hotels/${hotel._id}`)}
               />
             ))

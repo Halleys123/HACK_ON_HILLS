@@ -38,9 +38,9 @@ export default async function customFetch(
     status: '',
     error: false,
   };
-
+  console.log(import.meta.env.VITE_BACKEND);
   try {
-    const url = 'http://localhost:3000/api/v1' + endpoint;
+    const url = import.meta.env.VITE_BACKEND + endpoint;
     const request = await fetch(url, option);
     const data = await request.json();
     response = {

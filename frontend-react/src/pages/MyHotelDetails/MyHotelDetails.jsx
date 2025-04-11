@@ -117,7 +117,9 @@ export default function MyHotelDetails() {
     const formData = new FormData(ref.current);
     try {
       let response = await fetch(
-        `http://localhost:3000/api/v1/room/upload-image?roomId=${roomId}&hotelId=${hotelId}`,
+        `${
+          import.meta.env.VITE_BACKEND
+        }/room/upload-image?roomId=${roomId}&hotelId=${hotelId}`,
         {
           method: 'POST',
           headers: {
@@ -200,8 +202,7 @@ export default function MyHotelDetails() {
                 {hotel?.primaryImage ? (
                   <img
                     src={
-                      'http://localhost:3000/api/v1/images/' +
-                      hotel?.primaryImage
+                      `${import.meta.env.VITE_BACKEND}/images/${hotel?.primaryImage}`
                     }
                     alt={hotel?.hotelName}
                     className='w-full h-full object-cover'
@@ -348,8 +349,7 @@ export default function MyHotelDetails() {
                     {room.images ? (
                       <img
                         src={
-                          'http://localhost:3000/api/v1/images/' +
-                          room.images[0]
+                          `${import.meta.env.VITE_BACKEND}/images/${room.images[0]}`
                         }
                         alt={room.title}
                         className='w-full h-full object-cover'

@@ -23,7 +23,7 @@ function HotelDetailsCard({ hotel }) {
     const formData = new FormData(ref.current);
     try {
       let response = await fetch(
-        `http://localhost:3000/api/v1/hotel/${hotel._id}/add-primary-image`,
+        `${import.meta.env.VITE_BACKEND}/hotel/${hotel._id}/add-primary-image`,
         {
           method: 'POST',
           headers: {
@@ -51,7 +51,9 @@ function HotelDetailsCard({ hotel }) {
         <div className='w-24 sm:w-32 md:w-48 bg-gray-100 flex-shrink-0'>
           {hotel.primaryImage ? (
             <img
-              src={'http://localhost:3000/api/v1/images/' + hotel.primaryImage}
+              src={`${import.meta.env.VITE_BACKEND}/images/${
+                hotel.primaryImage
+              }`}
               alt={hotel.hotelName}
               className='w-full h-full object-cover'
             />

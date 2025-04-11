@@ -98,7 +98,7 @@ export default function SearchRooms({
   }, []);
 
   async function getImage(hotelId) {
-    setPrimaryImage(`http://localhost:3000/api/v1/images/${hotelId}.jpg`);
+    setPrimaryImage(`${import.meta.env.VITE_BACKEND}/images/${hotelId}.jpg`);
   }
 
   useEffect(() => {
