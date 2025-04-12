@@ -37,7 +37,25 @@ export default function ReservationsTable({
     }
   }
 
-  async function handleCheckOut(bookingId) {}
+  async function handleCheckOut(bookingId) {
+    setLoading(true);
+    setMessage('Checking Out...');
+    const response = await customFetch(`/booking/check-out/${bookingId}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        'Content-Type': 'application/json',
+      },
+    });
+    console.log(response);
+    setLoading(false);
+    if (response.error) {
+      message.error('Error', response.data.message || 'Something went wrong');
+    } else {
+      message.success('Success', response.data.message);
+      reload();
+    }
+  }
 
   return (
     <div className='bg-white shadow overflow-hidden sm:rounded-lg'>

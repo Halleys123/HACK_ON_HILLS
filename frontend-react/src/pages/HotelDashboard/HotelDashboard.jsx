@@ -167,10 +167,6 @@ export default function HotelStaffDashboard() {
     );
   }, []);
 
-  const handleCheckIn = (id) => {};
-
-  const handleCheckOut = (id) => {};
-
   return (
     <div className='min-h-screen bg-gray-50'>
       <Loading visible={loading} text={loadingMessage} />
@@ -228,8 +224,6 @@ export default function HotelStaffDashboard() {
         </div>
         <ReservationsTable
           filteredReservations={reservations}
-          handleCheckIn={handleCheckIn}
-          handleCheckOut={handleCheckOut}
           reload={reload}
         />
         <Pagination
