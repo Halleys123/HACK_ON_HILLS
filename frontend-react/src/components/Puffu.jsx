@@ -1,159 +1,138 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState } from 'react';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 export default function AiAssistant() {
-  const [isInitialized, setIsInitialized] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [inputMessage, setInputMessage] = useState('');
+  const [messages, setMessages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src =
-      'https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1';
-    script.async = true;
-    document.head.appendChild(script);
+  // Initialize Gemini API
+  const genAI = new GoogleGenerativeAI(
+    'AIzaSyCGh2_hrRKVOwZXeN4B4EXhqAkfk_1Oa7U'
+  );
+  const model = genAI.getGenerativeModel({
+    model: 'gemini-1.5-pro', // Update to 'gemini-2.0-flash' if needed
+    maxOutputTokens: 100,
+    temperature: 0.7,
+  });
 
-    return () => {
-      document.head.removeChild(script);
-    };
+  // Send message to Gemini API and get a response
+  const handleSendMessage = async () => {
+    if (!inputMessage.trim()) return;
+
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // Add user's message to the chat
+      const userMessage = { content: inputMessage, isBot: false };
+      setMessages((prev) => [...prev, userMessage]);
+
+      // Generate response from Gemini API
+      const prompt =
+        'Requrements: 1. Strictly Give reply in 2 lines, 2. should only be about himachal pradesh, 3. If next line contains questions that are not related to himachal then say I know only about Himachal only: myQuery: ' +
+        inputMessage;
+      const result = await model.generateContent(prompt);
+      const responseText = await result.response.text();
+
+      // Add bot's response to the chat
+      const botMessage = { content: responseText, isBot: true };
+      setMessages((prev) => [...prev, botMessage]);
+      setInputMessage('');
+    } catch (err) {
+      setError('Error communicating with Gemini API');
+      console.error('API Error:', err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Toggle chat visibility
+  const toggleChat = useCallback(() => {
+    setIsChatOpen((prev) => !prev);
   }, []);
 
-  const toggleChat = useCallback(() => {
-    const dfMessenger = document.querySelector('df-messenger');
-    const chatEl = dfMessenger?.shadowRoot?.querySelector('df-messenger-chat');
-
-    if (chatEl) {
-      if (!isChatOpen) {
-        chatEl.setAttribute('opened', '');
-      } else {
-        chatEl.removeAttribute('opened');
-      }
-      setIsChatOpen(!isChatOpen);
-    }
-  }, [isChatOpen]);
-
-  useEffect(() => {
-    if (!isInitialized) {
-      const initializeChat = () => {
-        const dfMessenger = document.querySelector('df-messenger');
-        const puffuTrigger = document.getElementById('puffuTrigger');
-
-        if (!dfMessenger || !puffuTrigger) return;
-
-        puffuTrigger?.addEventListener('click', toggleChat);
-
-        // Handle chat state
-        const handleChatState = () => {
-          const chatEl =
-            dfMessenger?.shadowRoot?.querySelector('df-messenger-chat');
-          if (chatEl) {
-            const observer = new MutationObserver((mutations) => {
-              mutations.forEach((mutation) => {
-                if (
-                  mutation.type === 'attributes' &&
-                  mutation.attributeName === 'opened'
-                ) {
-                  const isOpened = chatEl.hasAttribute('opened');
-                  setIsChatOpen(isOpened);
-                }
-              });
-            });
-
-            observer.observe(chatEl, {
-              attributes: true,
-              attributeFilter: ['opened'],
-            });
-          }
-        };
-
-        // Hide default button and handle chat state
-        const interval = setInterval(() => {
-          const chatEl =
-            dfMessenger?.shadowRoot?.querySelector('df-messenger-chat');
-          const innerBtn = chatEl?.shadowRoot?.querySelector('button');
-
-          if (innerBtn && chatEl) {
-            innerBtn.style.display = 'none';
-            handleChatState();
-            clearInterval(interval);
-          }
-        }, 500);
-      };
-
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializeChat);
-      } else {
-        initializeChat();
-      }
-
-      setIsInitialized(true);
-    }
-  }, [isInitialized, toggleChat]);
-
   return (
-    <>
-      {/* Dialogflow Messenger */}
-      <div className='fixed bottom-4 right-4 z-[999]'>
-        <df-messenger
-          intent='WELCOME'
-          chat-title='Puffu'
-          agent-id='13ef68ef-44b4-4b57-9b96-e2ac94eade56'
-          language-code='en'
-          chat-icon='/images/puffu-end.png'
-        ></df-messenger>
-      </div>
-
-      {/* Custom Puffu Button and Close Button Container */}
-      <div className='fixed bottom-5 right-5 z-[1000] flex items-center gap-3'>
-        {isChatOpen && (
-          <button
-            onClick={toggleChat}
-            className='w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center hover:bg-red-600 transition-all duration-300 shadow-lg'
-            aria-label='Close Puffu Chat'
-          >
-            <svg
-              xmlns='http://www.w3.org/2000/svg'
-              className='h-6 w-6'
-              fill='none'
-              viewBox='0 0 24 24'
-              stroke='currentColor'
+    <div className='fixed bottom-5 right-5 z-[1000] flex items-end gap-3'>
+      {/* Chat Box */}
+      {isChatOpen && (
+        <div className='w-[350px] h-[500px] bg-white rounded-lg shadow-xl flex flex-col'>
+          {/* Chat Header */}
+          <div className='bg-slate-900 p-4 rounded-t-lg flex justify-between items-center'>
+            <h2 className='text-white text-lg font-semibold'>
+              Puffu Assistant
+            </h2>
+            <button
+              onClick={toggleChat}
+              className='text-white hover:text-gray-200'
             >
-              <path
-                strokeLinecap='round'
-                strokeLinejoin='round'
-                strokeWidth={2}
-                d='M6 18L18 6M6 6l12 12'
+              ×
+            </button>
+          </div>
+
+          {/* Chat Messages */}
+          <div className='flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50'>
+            {messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex ${
+                  msg.isBot ? 'justify-start' : 'justify-end'
+                }`}
+              >
+                <div
+                  className={`max-w-[80%] p-3 rounded-lg ${
+                    msg.isBot
+                      ? 'bg-white text-gray-800 shadow-sm border'
+                      : 'bg-slate-900 text-white'
+                  }`}
+                >
+                  {msg.content}
+                </div>
+              </div>
+            ))}
+            {isLoading && (
+              <div className='flex justify-start'>
+                <div className='bg-white p-3 rounded-lg shadow-sm border'>
+                  Typing...
+                </div>
+              </div>
+            )}
+            {error && <div className='text-red-500 text-sm p-2'>{error}</div>}
+          </div>
+
+          {/* Input Area */}
+          <div className='p-4 border-t'>
+            <div className='flex gap-2'>
+              <input
+                type='text'
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                placeholder='Type your message...'
+                className='flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900'
+                disabled={isLoading}
               />
-            </svg>
-          </button>
-        )}
-        <button
-          id='puffuTrigger'
-          className='w-[60px] h-[60px] rounded-full bg-cover bg-center bg-no-repeat border-none cursor-pointer transition-transform duration-300 hover:scale-110 shadow-lg'
-          style={{ backgroundImage: "url('/images/puffu-end.png')" }}
-          aria-label='Open Puffu Chat'
-        ></button>
-      </div>
+              <button
+                onClick={handleSendMessage}
+                className='bg-slate-900 text-white px-4 py-2 rounded-lg hover:bg-slate-800 disabled:opacity-50'
+                disabled={isLoading}
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
-      {/* Styles for Dialogflow elements */}
-      <style jsx global>{`
-        df-messenger {
-          --df-messenger-bot-message: #878787;
-          --df-messenger-button-titlebar-color: #0f172a;
-          --df-messenger-chat-background-color: #fafafa;
-          --df-messenger-font-color: white;
-          --df-messenger-send-icon: #0f172a;
-          --df-messenger-user-message: #0f172a;
-        }
-
-        /* Hide default close button */
-        df-messenger-chat::part(close-icon) {
-          display: none !important;
-        }
-
-        /* Ensure chat wrapper remains visible */
-        df-messenger-chat::part(chat-wrapper) {
-          display: block !important;
-        }
-      `}</style>
-    </>
+      {/* Custom Trigger Button */}
+      <button
+        onClick={toggleChat}
+        className='w-[60px] h-[60px] rounded-full bg-cover bg-center bg-no-repeat border-none cursor-pointer transition-transform duration-300 hover:scale-110 shadow-lg'
+        style={{ backgroundImage: "url('/images/puffu-end.png')" }}
+        aria-label={isChatOpen ? 'Close Chat' : 'Open Chat'}
+      ></button>
+    </div>
   );
 }
