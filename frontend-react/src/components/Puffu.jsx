@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import puffu from '@assets/puffu-end.png'; // Adjust the path as necessary
 
 export default function AiAssistant() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -130,7 +131,7 @@ export default function AiAssistant() {
       <button
         onClick={toggleChat}
         className='w-[60px] h-[60px] rounded-full bg-cover bg-center bg-no-repeat border-none cursor-pointer transition-transform duration-300 hover:scale-110 shadow-lg'
-        style={{ backgroundImage: "url('/images/puffu-end.png')" }}
+        style={{ backgroundImage: `url(${puffu})` }}
         aria-label={isChatOpen ? 'Close Chat' : 'Open Chat'}
       ></button>
     </div>
