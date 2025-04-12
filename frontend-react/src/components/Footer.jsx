@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa6';
 import { useState, useEffect } from 'react';
 import AiAssistant from './Puffu.jsx';
+import logo from '@assets/logo.png';
 
 export default function Footer() {
   const footerData = [
@@ -189,9 +190,9 @@ export default function Footer() {
 
           <div className='mt-4 flex justify-center items-center gap-3 text-gray-500'>
             <img
-              src='/images/himachal-logo.png'
+              src={logo}
               alt='Himachal Tourism Logo'
-              className='w-20 h-20 object-contain drop-shadow-md rounded-md'
+              className='w-16 h-16 object-contain rounded-full'
             />
             <span>
               Made with ❤️ in Himachal • © 2025 Department of Tourism & Civil

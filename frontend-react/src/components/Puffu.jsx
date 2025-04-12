@@ -1,5 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import puffu from '@assets/puffu.jpg';
 
 export default function AiAssistant() {
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -61,9 +62,16 @@ export default function AiAssistant() {
         <div className='w-[350px] h-[500px] bg-white rounded-lg shadow-xl flex flex-col'>
           {/* Chat Header */}
           <div className='bg-slate-900 p-4 rounded-t-lg flex justify-between items-center'>
-            <h2 className='text-white text-lg font-semibold'>
-              Puffu Assistant
-            </h2>
+            <div className="flex items-center gap-3">
+              <img 
+                src={puffu} 
+                alt="Puffu" 
+                className="w-8 h-8 rounded-full object-cover"
+              />
+              <h2 className='text-white text-lg font-semibold'>
+                Puffu Assistant
+              </h2>
+            </div>
             <button
               onClick={toggleChat}
               className='text-white hover:text-gray-200'
@@ -81,6 +89,13 @@ export default function AiAssistant() {
                   msg.isBot ? 'justify-start' : 'justify-end'
                 }`}
               >
+                {msg.isBot && (
+                  <img 
+                    src={puffu} 
+                    alt="Puffu" 
+                    className="w-8 h-8 rounded-full object-cover mr-2"
+                  />
+                )}
                 <div
                   className={`max-w-[80%] p-3 rounded-lg ${
                     msg.isBot
@@ -94,6 +109,11 @@ export default function AiAssistant() {
             ))}
             {isLoading && (
               <div className='flex justify-start'>
+                <img 
+                  src={puffu} 
+                  alt="Puffu" 
+                  className="w-8 h-8 rounded-full object-cover mr-2"
+                />
                 <div className='bg-white p-3 rounded-lg shadow-sm border'>
                   Typing...
                 </div>
@@ -129,10 +149,15 @@ export default function AiAssistant() {
       {/* Custom Trigger Button */}
       <button
         onClick={toggleChat}
-        className='w-[60px] h-[60px] rounded-full bg-cover bg-center bg-no-repeat border-none cursor-pointer transition-transform duration-300 hover:scale-110 shadow-lg'
-        style={{ backgroundImage: "url('/images/puffu-end.png')" }}
+        className='w-[60px] h-[60px] rounded-full bg-white p-1 cursor-pointer transition-transform duration-300 hover:scale-110 shadow-lg overflow-hidden'
         aria-label={isChatOpen ? 'Close Chat' : 'Open Chat'}
-      ></button>
+      >
+        <img 
+          src={puffu} 
+          alt="Puffu Assistant" 
+          className="w-full h-full rounded-full object-cover"
+        />
+      </button>
     </div>
   );
 }
