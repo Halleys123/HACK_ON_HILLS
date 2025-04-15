@@ -4,6 +4,7 @@ import tailwindcss from '@tailwindcss/vite';
 export default defineConfig({
   plugins: [tailwindcss()],
   server: {
+    host: true, // This allows the server to be accessible on your local network
     port: 5173,
     open: true,
   },
