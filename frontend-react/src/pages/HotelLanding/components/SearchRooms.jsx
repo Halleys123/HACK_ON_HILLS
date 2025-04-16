@@ -137,6 +137,14 @@ export default function SearchRooms({
           <div className='flex gap-4'>
             <button
               onClick={() => {
+                navigate('/hotels');
+              }}
+              className='px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition'
+            >
+              Go Home
+            </button>
+            <button
+              onClick={() => {
                 navigate(`/login?redirect=/hotels/${hotelId}`);
               }}
               className='px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition'
@@ -157,6 +165,14 @@ export default function SearchRooms({
             <span className='text-white text-sm font-medium'>
               Hello, {user?.name}
             </span>
+            <button
+              onClick={() => {
+                navigate('/hotels');
+              }}
+              className='px-4 py-2 bg-white/10 backdrop-blur-sm rounded-full text-white hover:bg-white/20 transition'
+            >
+              Go Home
+            </button>
             <button
               onClick={() => {
                 localStorage.removeItem('token');

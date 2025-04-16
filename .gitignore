@@ -27,3 +27,5 @@ dist-ssr
 **/dist
 **/*.env
 **/*-lock.json
+
+**/*.mp4
